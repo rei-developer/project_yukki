@@ -1,4 +1,5 @@
-// const debug = text => _call('debug', _json({ text }))
+const alert = (description, options = {}) =>
+    _call('alert', _json({ title: options?.title, description }))
 
 const _json = args => JSON.stringify(args)
 

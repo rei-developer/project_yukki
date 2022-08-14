@@ -6,7 +6,7 @@ import 'package:mana_studio/utils/managers/asset_manager.dart';
 import 'package:mana_studio/utils/managers/storage_manager.dart';
 
 class ScriptLoader {
-  Future<ScriptsModel> run() async {
+  Future<ScriptsModel> load() async {
     final coreScripts = await _loadScriptsAssets(
       coreScriptType,
       _coreScriptsSource,
@@ -17,12 +17,32 @@ class ScriptLoader {
       _defaultScriptsSource,
       defaultScriptsAssets,
     );
-    final localScripts = await _loadLocalScripts(defaultScripts);
-    return ScriptsModel(
-      coreScripts,
-      defaultScripts,
-      localScripts,
+    return ScriptsModel.initial(
+      coreScripts: coreScripts,
+      defaultScripts: defaultScripts,
     );
+  }
+
+  Future<List<ScriptModel>> loadLocalScripts() async {
+    List<ScriptModel> scripts = [];
+    final localScripts = (await StorageManager(scriptsPath).files)
+        ?.where((element) => element.endsWith(jsExt))
+        .toList();
+    if (localScripts == null || localScripts.isEmpty) {
+      return [];
+    }
+    for (final localScript in localScripts) {
+      final documents = await StorageManager(localScript).documents;
+      final fileName = localScript
+          .replaceAll('$documents/$scriptsPath/', '')
+          .replaceAll(jsExt, '');
+      final script = await StorageManager(localScript, false).read();
+      if (script == null) {
+        continue;
+      }
+      scripts.add(ScriptModel(localScriptType, fileName, script));
+    }
+    return scripts;
   }
 
   Future<List<ScriptModel>> _loadScriptsAssets(
@@ -50,37 +70,6 @@ class ScriptLoader {
           ).loadString,
         ),
       );
-    }
-    return scripts;
-  }
-
-  Future<List<ScriptModel>> _loadLocalScripts(
-    List<ScriptModel> defaultScripts,
-  ) async {
-    List<ScriptModel> scripts = [];
-    final localScripts = (await StorageManager(scriptsPath).files)
-        ?.where((element) => element.endsWith(jsExt))
-        .toList();
-    if (localScripts == null || localScripts.isEmpty) {
-      for (final defaultScript in defaultScripts) {
-        final fileName = defaultScript.fileName;
-        final path = '$scriptsPath/$fileName$jsExt';
-        final script = defaultScript.code;
-        await StorageManager(path).write(script);
-        scripts.add(ScriptModel(localScriptType, fileName, script));
-      }
-    } else {
-      for (final localScript in localScripts) {
-        final documents = await StorageManager(localScript).documents;
-        final fileName = localScript
-            .replaceAll('$documents/$scriptsPath/', '')
-            .replaceAll(jsExt, '');
-        final script = await StorageManager(localScript, false).read();
-        if (script == null) {
-          continue;
-        }
-        scripts.add(ScriptModel(localScriptType, fileName, script));
-      }
     }
     return scripts;
   }

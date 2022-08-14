@@ -1,43 +1,47 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mana_studio/providers/project_provider.dart';
 import 'package:mana_studio/router.dart';
 import 'package:mana_studio/utils/handlers/main_handler.dart';
-import 'package:mana_studio/utils/loaders/script_loader.dart';
-import 'package:mana_studio/utils/script_runner.dart';
 
 void main() async {
-  runApp(const MainApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    const ProviderScope(
+      child: MainApp(),
+    ),
+  );
 }
 
-class MainApp extends StatefulWidget {
+class MainApp extends ConsumerStatefulWidget {
   const MainApp({Key? key}) : super(key: key);
 
   @override
-  State<MainApp> createState() => _MainAppState();
+  ConsumerState<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> {
-  Future<void> loadScript() async {
-    final scriptLoader = ScriptLoader();
-    final scripts = await scriptLoader.run();
-    final runner = ScriptRunner(scripts.code);
-    await runner.run();
+class _MainAppState extends ConsumerState<MainApp> {
+  @override
+  void initState() {
+    super.initState();
+    if (!MainHandler.isRunning) {
+      _projectProvider.loadScripts();
+    }
+    MainHandler.init();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!MainHandler.isRunning) {
-      loadScript();
-    }
-    MainHandler.init();
     return CupertinoApp(
       title: 'Test',
       initialRoute: '/',
       routes: getRoutes(context),
-      // navigatorObservers: [MainApp.observer],
       theme: const CupertinoThemeData(
         brightness: Brightness.dark,
         // primaryColor: PINK_COLOR,
-        // scaffoldBackgroundColor: CupertinoColors.systemBackground,
+        scaffoldBackgroundColor: CupertinoColors.systemBackground,
       ),
       // locale: TranslationProvider.of(context).flutterLocale,
       // supportedLocales: LocaleSettings.supportedLocales,
@@ -45,4 +49,6 @@ class _MainAppState extends State<MainApp> {
       debugShowCheckedModeBanner: false,
     );
   }
+
+  ProjectProvider get _projectProvider => ref.read(projectProvider.notifier);
 }
