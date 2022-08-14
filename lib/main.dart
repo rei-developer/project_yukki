@@ -27,7 +27,7 @@ class _MainAppState extends ConsumerState<MainApp> {
   void initState() {
     super.initState();
     if (!MainHandler.isRunning) {
-      _projectProvider.loadScripts();
+      _projectProvider.loadProject();
     }
     MainHandler.init();
   }

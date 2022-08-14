@@ -1,0 +1,14 @@
+[
+  {
+    "index": 0,
+    "type": "scenario",
+    "name": "마나",
+    "description": "안녕하세요?"
+  },
+  {
+    "index": 1,
+    "type": "scenario",
+    "name": "마나",
+    "description": "반갑습니다...!"
+  }
+]

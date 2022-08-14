@@ -67,8 +67,10 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
+    - assets/scenes/
     - assets/scripts/core_scripts/
     - assets/scripts/default_scripts/
+    - assets/scripts/default_scripts/character/
     - assets/scripts/default_scripts/character/
 
   # An image asset can refer to one or more resolution-specific "variants", see
