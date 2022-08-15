@@ -20,7 +20,7 @@ class _MainContainerState extends ConsumerState<MainContainer> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ..._sceneData.map((e) => Text(e['description'])),
+        // ..._sceneData.map((e) => Text(e['data']['description'])),
         CupertinoButton.filled(
           child: const Text('새 프로젝트 생성'),
           onPressed: () => _projectProvider.generateProject(),

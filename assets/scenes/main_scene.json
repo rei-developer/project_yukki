@@ -1,14 +1,24 @@
 [
   {
-    "index": 0,
-    "type": "scenario",
-    "name": "마나",
-    "description": "안녕하세요?"
+    "type": "script",
+    "id": "",
+    "tag": "",
+    "remarks": "",
+    "data": {
+      "name": "마나",
+      "description": "안녕하십니까?"
+    },
+    "children": []
   },
   {
-    "index": 1,
-    "type": "scenario",
-    "name": "마나",
-    "description": "반갑습니다...!"
+    "type": "script",
+    "id": "",
+    "tag": "",
+    "remarks": "",
+    "data": {
+      "name": "마나",
+      "description": "반갑습니당... ㅎㅎ"
+    },
+    "children": []
   }
 ]

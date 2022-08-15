@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:mana_studio/models/scene_item_model.dart';
 import 'package:mana_studio/models/scenes_model.dart';
 import 'package:mana_studio/models/scripts_model.dart';
+import 'package:mana_studio/utils/func.dart';
 
 class ProjectModel {
   ProjectModel(
@@ -30,15 +34,43 @@ class ProjectModel {
         sceneName ?? this.sceneName,
       );
 
-  List<dynamic> get sceneData {
-    final scene = scenes.localScenes.where(
+  List<SceneItemModel> get sceneData {
+    final localScene = scenes.localScenes.where(
       (e) => e.fileName == sceneName,
     );
-    if (scene.isEmpty) {
+    if (localScene.isEmpty) {
       return [];
     }
-    return scene.last.fromJson ?? [];
+    final jsonData = localScene.last.fromJson;
+    if (jsonData.isEmpty) {
+      return [];
+    }
+    return _mapSceneItems(jsonData);
   }
+
+  List<SceneItemModel> _mapSceneItems(
+    List<dynamic> jsonData, [
+    List<int>? indexes,
+  ]) =>
+      mapIndexed(
+        jsonData,
+        (index, item) => _generateSceneItem(
+          item,
+          [...indexes ?? [], index + 1],
+        ),
+      ).toList();
+
+  SceneItemModel _generateSceneItem(dynamic data, List<int> indexes) =>
+      SceneItemModel.initial(
+        indexes,
+        data['type'],
+        data['data'],
+        tag: data['tag'],
+        remarks: data['remarks'],
+        children: _mapSceneItems(data['children'] ?? [], indexes),
+      );
+
+  List<String> get _sceneItemTypesChildrenAllowed => ['if', 'switch'];
 
   final ScenesModel scenes;
   final ScriptsModel scripts;
