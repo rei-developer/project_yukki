@@ -17,18 +17,18 @@ class ScriptRunner {
       }
       runtime.evaluateAsync('$code\n$_runCommand');
     } catch (e) {
-      print('error => $e');
+      print('script runner error => $e');
     }
   }
 
   List<ScriptChannelModel> get _messages => [
-        ScriptChannelModel(
-          'alert',
-          (dynamic data) => AlertManager.show(
-            data['description'],
-            title: data['title'],
-          ),
-        ),
+        // ScriptChannelModel(
+        //   'alert',
+        //   (dynamic data) => AlertManager.show(
+        //     data['description'],
+        //     title: data['title'],
+        //   ),
+        // ),
       ];
 
   JavascriptRuntime get _javascriptRuntime => getJavascriptRuntime();

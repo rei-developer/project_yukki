@@ -1,19 +1,37 @@
+import 'package:mana_studio/models/scenes/scene_content_model.dart';
+
 class GameModel {
-  GameModel(this.scene);
+  GameModel(
+    this.contentIndexes,
+    this.contents, [
+    this.isPossibleNext = true,
+  ]);
 
   factory GameModel.initial({
-    dynamic scene,
+    List<int>? contentIndexes,
+    List<SceneContentModel>? contents,
+    bool? isPossibleNext,
   }) =>
       GameModel(
-        scene ?? [],
+        contentIndexes ?? [1],
+        contents ?? [],
+        isPossibleNext ?? true,
       );
 
   GameModel copyWith({
-    dynamic scene,
+    List<int>? contentIndexes,
+    List<SceneContentModel>? contents,
+    bool? isPossibleNext,
   }) =>
       GameModel(
-        scene ?? this.scene,
+        contentIndexes ?? this.contentIndexes,
+        contents ?? this.contents,
+        isPossibleNext ?? this.isPossibleNext,
       );
 
-  final dynamic scene;
+  String get contentId => contentIndexes.join('-');
+
+  final List<int> contentIndexes;
+  final List<SceneContentModel> contents;
+  final bool isPossibleNext;
 }

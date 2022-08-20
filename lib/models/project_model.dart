@@ -1,43 +1,40 @@
-import 'dart:convert';
-
-import 'package:mana_studio/models/scene_item_model.dart';
-import 'package:mana_studio/models/scenes_model.dart';
+import 'package:mana_studio/config/project_config.dart';
+import 'package:mana_studio/models/scenes/scene_content_model.dart';
+import 'package:mana_studio/models/scenes/scenes_model.dart';
 import 'package:mana_studio/models/scripts_model.dart';
 import 'package:mana_studio/utils/func.dart';
 
 class ProjectModel {
   ProjectModel(
+    this.sceneName,
     this.scenes,
     this.scripts,
-    this.sceneName,
   );
 
   factory ProjectModel.initial({
+    String? sceneName,
     ScenesModel? scenes,
     ScriptsModel? scripts,
-    String? sceneName,
   }) =>
       ProjectModel(
+        sceneName ?? firstSceneName,
         scenes ?? ScenesModel.initial(),
         scripts ?? ScriptsModel.initial(),
-        sceneName ?? 'main_scene',
       );
 
   ProjectModel copyWith({
+    String? sceneName,
     ScenesModel? scenes,
     ScriptsModel? scripts,
-    String? sceneName,
   }) =>
       ProjectModel(
+        sceneName ?? this.sceneName,
         scenes ?? this.scenes,
         scripts ?? this.scripts,
-        sceneName ?? this.sceneName,
       );
 
-  List<SceneItemModel> get sceneData {
-    final localScene = scenes.localScenes.where(
-      (e) => e.fileName == sceneName,
-    );
+  List<SceneContentModel> get sceneContents {
+    final localScene = scenes.localScenes.where((e) => e.fileName == sceneName);
     if (localScene.isEmpty) {
       return [];
     }
@@ -45,34 +42,42 @@ class ProjectModel {
     if (jsonData.isEmpty) {
       return [];
     }
-    return _mapSceneItems(jsonData);
+    return _addAllChildren(_mapSceneContents(jsonData));
   }
 
-  List<SceneItemModel> _mapSceneItems(
+  List<SceneContentModel> _addAllChildren(List<SceneContentModel> children) {
+    List<SceneContentModel> result = [];
+    if (children.isNotEmpty) {
+      for (final child in children) {
+        result.add(child);
+        result.addAll(_addAllChildren(child.children));
+      }
+    }
+    return result;
+  }
+
+  List<SceneContentModel> _mapSceneContents(
     List<dynamic> jsonData, [
     List<int>? indexes,
   ]) =>
       mapIndexed(
         jsonData,
-        (index, item) => _generateSceneItem(
+        (index, item) => _generateSceneContent(
           item,
           [...indexes ?? [], index + 1],
         ),
       ).toList();
 
-  SceneItemModel _generateSceneItem(dynamic data, List<int> indexes) =>
-      SceneItemModel.initial(
+  SceneContentModel _generateSceneContent(dynamic data, List<int> indexes) =>
+      SceneContentModel.initial(
         indexes,
         data['type'],
         data['data'],
-        tag: data['tag'],
         remarks: data['remarks'],
-        children: _mapSceneItems(data['children'] ?? [], indexes),
+        children: _mapSceneContents(data['children'] ?? [], indexes),
       );
 
-  List<String> get _sceneItemTypesChildrenAllowed => ['if', 'switch'];
-
+  final String sceneName;
   final ScenesModel scenes;
   final ScriptsModel scripts;
-  final String sceneName;
 }

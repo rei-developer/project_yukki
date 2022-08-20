@@ -76,6 +76,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_highlight:
+    dependency: "direct main"
+    description:
+      name: flutter_highlight
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.0"
   flutter_js:
     dependency: "direct main"
     description:
@@ -114,6 +121,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  highlight:
+    dependency: transitive
+    description:
+      name: highlight
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.0"
   http:
     dependency: transitive
     description:
@@ -247,6 +261,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  screen_retriever:
+    dependency: transitive
+    description:
+      name: screen_retriever
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -385,6 +406,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.6.1"
+  window_manager:
+    dependency: "direct main"
+    description:
+      name: window_manager
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.6"
   xdg_directories:
     dependency: transitive
     description:

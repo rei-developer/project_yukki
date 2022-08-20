@@ -1,24 +1,187 @@
 [
   {
-    "type": "script",
-    "id": "",
-    "tag": "",
-    "remarks": "",
+    "type": "SHOW_MESSAGE",
+    "tag": "1",
     "data": {
       "name": "마나",
-      "description": "안녕하십니까?"
-    },
-    "children": []
+      "description": "안녕하세요? ㅋㅋㅋㅋ"
+    }
   },
   {
-    "type": "script",
-    "id": "",
-    "tag": "",
-    "remarks": "",
+    "type": "SHOW_MESSAGE",
+    "tag": "2",
     "data": {
       "name": "마나",
-      "description": "반갑습니당... ㅎㅎ"
+      "description": "하하하!"
+    }
+  },
+  {
+    "type": "IF",
+    "tag": "3",
+    "data": {
+      "type": "Number",
+      "equation": "Equal to",
+      "value": 300
     },
+    "children": [
+      {
+        "type": "IF",
+        "tag": "3-3",
+        "data": {
+          "type": "Number",
+          "equation": "Equal to",
+          "value": 301
+        },
+        "children": [
+          {
+            "type": "SHOW_MESSAGE",
+            "tag": "3-3-1",
+            "data": {
+              "name": "마나",
+              "description": "지랄하네ㅐ ㅋㅋㅋㅋ"
+            }
+          },
+          {
+            "type": "SHOW_MESSAGE",
+            "tag": "3-3-2",
+            "data": {
+              "name": "마나",
+              "description": "븅신!@?"
+            }
+          },
+          {
+            "type": "IF",
+            "tag": "3-3-3",
+            "data": {
+              "type": "Number",
+              "equation": "Equal to",
+              "value": 300
+            },
+            "children": [
+              {
+                "type": "SHOW_MESSAGE",
+                "tag": "3-3-3-1",
+                "data": {
+                  "name": "마나",
+                  "description": "지랄하네ㅐ ㅋㅋㅋㅋ"
+                }
+              },
+              {
+                "type": "SHOW_MESSAGE",
+                "tag": "3-3-3-2",
+                "data": {
+                  "name": "마나",
+                  "description": "븅신!@?"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "WAIT",
+    "tag": "4",
+    "data": {
+      "duration": 2000
+    }
+  },
+  {
+    "type": "ELSE_IF",
+    "tag": "5",
+    "data": {
+      "type": "Number",
+      "equation": "Equal to",
+      "value": 300
+    },
+    "children": [
+      {
+        "type": "SHOW_MESSAGE",
+        "tag": "5-1",
+        "data": {
+          "name": "마나",
+          "description": "반가워요! ㅎㅎ"
+        }
+      },
+      {
+        "type": "SHOW_MESSAGE",
+        "tag": "5-2",
+        "data": {
+          "name": "마나",
+          "description": "많이 놀라셨셰요?"
+        }
+      },
+      {
+        "type": "IF",
+        "tag": "5-3",
+        "data": {
+          "type": "Number",
+          "equation": "Equal to",
+          "value": 300
+        },
+        "children": [
+          {
+            "type": "SHOW_MESSAGE",
+            "tag": "5-3-1",
+            "data": {
+              "name": "마나",
+              "description": "지랄하네ㅐ ㅋㅋㅋㅋ"
+            }
+          },
+          {
+            "type": "SHOW_MESSAGE",
+            "tag": "5-3-2",
+            "data": {
+              "name": "마나",
+              "description": "븅신!@?"
+            }
+          },
+          {
+            "type": "IF",
+            "tag": "5-3-3",
+            "data": {
+              "type": "Number",
+              "equation": "Equal to",
+              "value": 300
+            },
+            "children": [
+              {
+                "type": "SHOW_MESSAGE",
+                "tag": "5-3-3-1",
+                "data": {
+                  "name": "마나",
+                  "description": "지랄하네ㅐ ㅋㅋㅋㅋ"
+                }
+              },
+              {
+                "type": "SHOW_MESSAGE",
+                "tag": "5-3-3-2",
+                "data": {
+                  "name": "마나",
+                  "description": "븅신!@?"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "COMMENT",
+    "tag": "6",
+    "data": "지랄하고 자빠졌네"
+  },
+  {
+    "type": "IF",
+    "tag": "7",
+    "data": {}
+  },
+  {
+    "type": "IF",
+    "tag": "8",
+    "data": {},
     "children": []
   }
 ]

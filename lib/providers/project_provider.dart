@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mana_studio/config/asset_config.dart';
+import 'package:mana_studio/config/project_config.dart';
 import 'package:mana_studio/config/storage_config.dart';
 import 'package:mana_studio/models/project_model.dart';
-import 'package:mana_studio/models/scene_model.dart';
-import 'package:mana_studio/models/scenes_model.dart';
+import 'package:mana_studio/models/scenes/scene_content_model.dart';
+import 'package:mana_studio/models/scenes/scene_model.dart';
+import 'package:mana_studio/models/scenes/scenes_model.dart';
 import 'package:mana_studio/models/script_model.dart';
 import 'package:mana_studio/models/scripts_model.dart';
 import 'package:mana_studio/providers/game_provider.dart';
@@ -91,17 +93,15 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     setScripts(state.scripts.copyWith(localScripts: localScripts));
   }
 
-  dynamic setSceneName([
-    String value = 'main_scene',
-  ]) {
-    final scene = state.copyWith(sceneName: value);
-    state = scene;
-    return scene.sceneData;
+  List<SceneContentModel> setSceneName([String sceneName = firstSceneName]) {
+    state = state.copyWith(sceneName: sceneName);
+    return state.sceneContents;
   }
 
-  void setScenes(ScenesModel value) => state = state.copyWith(scenes: value);
+  void setScenes(ScenesModel scenes) => state = state.copyWith(scenes: scenes);
 
-  void setScripts(ScriptsModel value) => state = state.copyWith(scripts: value);
+  void setScripts(ScriptsModel scripts) =>
+      state = state.copyWith(scripts: scripts);
 
   GameProvider get _gameProvider => ref.read(gameProvider.notifier);
 }

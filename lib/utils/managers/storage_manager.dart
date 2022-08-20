@@ -12,7 +12,7 @@ class StorageManager {
     try {
       return (await _file).readAsStringSync();
     } catch (e) {
-      print('error => $e');
+      print('storage manager read error => $e');
       return null;
     }
   }
@@ -21,7 +21,7 @@ class StorageManager {
     try {
       (await _file).writeAsStringSync(contents);
     } catch (e) {
-      print('error => $e');
+      print('storage manager write error => $e');
     }
   }
 
@@ -32,7 +32,7 @@ class StorageManager {
           .where((e) => FileSystemEntity.isFileSync(e))
           .toList();
     } catch (e) {
-      print('error => $e');
+      print('storage manager files error => $e');
       return null;
     }
   }

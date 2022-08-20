@@ -1,17 +1,43 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mana_studio/models/game_model.dart';
+import 'package:mana_studio/models/project_model.dart';
+import 'package:mana_studio/providers/game_provider.dart';
+import 'package:mana_studio/providers/project_provider.dart';
 
-class GameContainer extends StatefulWidget {
+class GameContainer extends ConsumerStatefulWidget {
   const GameContainer({Key? key}) : super(key: key);
 
   @override
-  State<GameContainer> createState() => _GameContainerState();
+  ConsumerState<GameContainer> createState() => _GameContainerState();
 }
 
-class _GameContainerState extends State<GameContainer> {
+class _GameContainerState extends ConsumerState<GameContainer> {
+  @override
+  void initState() {
+    super.initState();
+    _projectProvider.run();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text('하이'),
+    return Column(
+      children: [
+        CupertinoButton.filled(
+          child: const Text('다음'),
+          onPressed: () => _gameProvider.nextSceneContent(),
+        ),
+      ],
     );
   }
+
+  List<dynamic> get _sceneData => _gameState.contents;
+
+  ProjectProvider get _projectProvider => ref.read(projectProvider.notifier);
+
+  ProjectModel get _projectState => ref.watch(projectProvider);
+
+  GameProvider get _gameProvider => ref.read(gameProvider.notifier);
+
+  GameModel get _gameState => ref.watch(gameProvider);
 }
