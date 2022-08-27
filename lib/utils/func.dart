@@ -16,4 +16,16 @@ extension CustomIterable<T> on Iterable<T> {
     final list = where(test);
     return list.isEmpty ? null : list.first;
   }
+
+  Iterable<T> superJoin(T separator) {
+    final iterator = this.iterator;
+    if (!iterator.moveNext()) return [];
+    final list = [iterator.current];
+    while (iterator.moveNext()) {
+      list
+        ..add(separator)
+        ..add(iterator.current);
+    }
+    return list;
+  }
 }

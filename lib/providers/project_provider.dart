@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mana_studio/config/asset_config.dart';
+import 'package:mana_studio/config/debugger_config.dart';
 import 'package:mana_studio/config/project_config.dart';
 import 'package:mana_studio/config/storage_config.dart';
 import 'package:mana_studio/models/project_model.dart';
@@ -8,11 +11,13 @@ import 'package:mana_studio/models/scenes/scene_model.dart';
 import 'package:mana_studio/models/scenes/scenes_model.dart';
 import 'package:mana_studio/models/script_model.dart';
 import 'package:mana_studio/models/scripts_model.dart';
+import 'package:mana_studio/providers/debugger_provider.dart';
 import 'package:mana_studio/providers/game_provider.dart';
 import 'package:mana_studio/utils/loaders/scene_loader.dart';
 import 'package:mana_studio/utils/loaders/script_loader.dart';
 import 'package:mana_studio/utils/managers/storage_manager.dart';
 import 'package:mana_studio/utils/script_runner.dart';
+import 'package:uuid/uuid.dart';
 
 class ProjectProvider extends StateNotifier<ProjectModel> {
   ProjectProvider(this.ref) : super(ProjectModel.initial());
@@ -78,6 +83,97 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     setScenes(state.scenes.copyWith(localScenes: localScenes));
   }
 
+  void addSceneContent(dynamic prev, dynamic next, [bool isRoot = false]) {
+    try {
+      List<dynamic> contents = [...state.sceneContents];
+      if (isRoot) {
+        contents = _addSceneContentNewItem(contents, prev);
+      } else {
+        contents = _addSceneContent(contents, prev, next);
+      }
+      changeSceneContent(contents);
+    } on StackOverflowError catch (e) {
+      _debuggerProvider.addDebug(e.toString(), errorDebug);
+    }
+  }
+
+  List<dynamic> _addSceneContent(
+    List<dynamic> contents,
+    dynamic prev,
+    dynamic next,
+  ) =>
+      contents.map((content) {
+        if (content['children'] != null) {
+          if (content['uuid'] == next['uuid']) {
+            content['children'] = _addSceneContentNewItem(
+              content['children'],
+              prev,
+            );
+          }
+          content['children'] = _addSceneContent(
+            content['children'],
+            prev,
+            next,
+          );
+        }
+        return content;
+      }).toList();
+
+  List<dynamic> _addSceneContentNewItem(
+    List<dynamic> contents,
+    dynamic content,
+  ) {
+    dynamic item = json.decode(json.encode(content));
+    item['uuid'] = const Uuid().v4();
+    contents = [...contents, item];
+    return contents;
+  }
+
+  void swipeSceneContent(dynamic prev, dynamic next) {
+    List<dynamic> contents = [...state.sceneContents];
+    contents = _swipeSceneContents(contents, prev, next);
+    changeSceneContent(contents);
+  }
+
+  List<dynamic> _swipeSceneContents(
+    List<dynamic> contents,
+    dynamic prev,
+    dynamic next,
+  ) =>
+      contents.map((content) {
+        content['temp'] = content['uuid'];
+        if (content['temp'] == prev['uuid']) {
+          content = next;
+          content['temp'] = prev['uuid'];
+        }
+        if (content['temp'] == next['uuid']) {
+          content = prev;
+          content['temp'] = next['uuid'];
+        }
+        if (content['children'] != null) {
+          content['children'] = _swipeSceneContents(
+            content['children'],
+            prev,
+            next,
+          );
+        }
+        return content;
+      }).toList();
+
+  void changeSceneContent(dynamic content) {
+    final findIndex = state.scenes.localScenes.indexWhere(
+      (e) => e.fileName == state.sceneName,
+    );
+    if (findIndex < 0) {
+      return;
+    }
+    List<SceneModel> scenes = [...state.scenes.localScenes];
+    scenes[findIndex] = scenes[findIndex].copyWith(
+      content: json.encode(content),
+    );
+    setLocalScenes(scenes);
+  }
+
   Future<void> generateLocalScripts() async {
     List<ScriptModel> localScripts = [];
     for (final defaultScript in state.scripts.defaultScripts) {
@@ -95,15 +191,20 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
 
   List<SceneContentModel> setSceneName([String sceneName = firstSceneName]) {
     state = state.copyWith(sceneName: sceneName);
-    return state.sceneContents;
+    return state.sceneContentsWithChildren;
   }
 
   void setScenes(ScenesModel scenes) => state = state.copyWith(scenes: scenes);
+
+  void setLocalScenes(List<SceneModel> localScenes) =>
+      setScenes(state.scenes.copyWith(localScenes: localScenes));
 
   void setScripts(ScriptsModel scripts) =>
       state = state.copyWith(scripts: scripts);
 
   GameProvider get _gameProvider => ref.read(gameProvider.notifier);
+
+  DebuggerProvider get _debuggerProvider => ref.read(debuggerProvider.notifier);
 }
 
 final projectProvider = StateNotifierProvider<ProjectProvider, ProjectModel>(

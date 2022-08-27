@@ -1,0 +1,23 @@
+{
+  "title": "Mana Studio",
+  "scene": {
+    "header": "Scene [${sceneName}.json]",
+    "children": "Children",
+    "add": "Drop new content here...",
+    "commandType": {
+      "basic": "Basic",
+      "condition": "Condition"
+    },
+    "command": {
+      "SHOW_MESSAGE": "Show Message",
+      "WAIT": "Wait",
+      "COMMENT": "Comment",
+      "IF": "If",
+      "ELSE_IF": "Else If",
+      "ELSE": "Else"
+    }
+  },
+  "debug": {
+    "header": "Debug Console"
+  }
+}

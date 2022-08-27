@@ -33,7 +33,7 @@ class ProjectModel {
         scripts ?? this.scripts,
       );
 
-  List<SceneContentModel> get sceneContents {
+  dynamic get sceneContents {
     final localScene = scenes.localScenes.where((e) => e.fileName == sceneName);
     if (localScene.isEmpty) {
       return [];
@@ -42,8 +42,11 @@ class ProjectModel {
     if (jsonData.isEmpty) {
       return [];
     }
-    return _addAllChildren(_mapSceneContents(jsonData));
+    return jsonData;
   }
+
+  List<SceneContentModel> get sceneContentsWithChildren =>
+      _addAllChildren(_mapSceneContents(sceneContents));
 
   List<SceneContentModel> _addAllChildren(List<SceneContentModel> children) {
     List<SceneContentModel> result = [];
@@ -70,6 +73,7 @@ class ProjectModel {
 
   SceneContentModel _generateSceneContent(dynamic data, List<int> indexes) =>
       SceneContentModel.initial(
+        data['uuid'],
         indexes,
         data['type'],
         data['data'],

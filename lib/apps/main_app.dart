@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mana_studio/config/ui_config.dart';
+import 'package:mana_studio/i18n/strings.g.dart';
 import 'package:mana_studio/providers/project_provider.dart';
 import 'package:mana_studio/router.dart';
 import 'package:mana_studio/utils/handlers/main_handler.dart';
@@ -26,14 +29,18 @@ class _MainAppState extends ConsumerState<MainApp> {
         title: 'Test',
         initialRoute: '/',
         routes: getRoutes(context),
-        theme: const CupertinoThemeData(
+        theme: CupertinoThemeData(
           brightness: Brightness.dark,
-          // primaryColor: PINK_COLOR,
+          primaryColor: primaryColor,
           scaffoldBackgroundColor: CupertinoColors.systemBackground,
+          textTheme: CupertinoTextThemeData(
+            primaryColor: primaryColor,
+            textStyle: primaryTextStyle,
+          ),
         ),
-        // locale: TranslationProvider.of(context).flutterLocale,
-        // supportedLocales: LocaleSettings.supportedLocales,
-        // localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        locale: TranslationProvider.of(context).flutterLocale,
+        supportedLocales: LocaleSettings.supportedLocales,
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
         debugShowCheckedModeBanner: false,
       );
 

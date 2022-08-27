@@ -6,7 +6,6 @@ class ScriptEditor extends StatefulWidget {
     this.controller, {
     this.language,
     this.theme = const {},
-    this.padding,
     int tabSize = 8,
     Key? key,
   })  : initialSource = controller.text.replaceAll('\t', ' ' * tabSize),
@@ -16,7 +15,6 @@ class ScriptEditor extends StatefulWidget {
   final String initialSource;
   final String? language;
   final Map<String, TextStyle> theme;
-  final EdgeInsetsGeometry? padding;
 
   static const _rootKey = 'root';
 
@@ -50,77 +48,63 @@ class _ScriptEditorState extends State<ScriptEditor> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final nodes = highlight.parse(source, language: widget.language).nodes!;
-    TextStyle textStyle = TextStyle(
-      color: widget.theme[ScriptEditor._rootKey]?.color,
-      fontSize: 13,
-      fontWeight: FontWeight.w300,
-      letterSpacing: 0.5,
-    );
-    return Container(
-      padding: widget.padding,
-      color: widget.theme[ScriptEditor._rootKey]?.backgroundColor,
-      child: SizedBox(
-        width: double.infinity,
-        height: 200,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              controller: _previewController,
-              child: SizedBox(
-                width: double.infinity,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          ...List.generate(
-                            source.split('\n').length,
-                            (index) => Text(
-                              '${index + 1}',
-                              style: textStyle,
+  Widget build(BuildContext context) => Container(
+        color: widget.theme[ScriptEditor._rootKey]?.backgroundColor,
+        child: SizedBox(
+          width: double.infinity,
+          height: 200,
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                controller: _previewController,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 40,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            ...List.generate(
+                              source.split('\n').length,
+                              (index) => Text(
+                                '${index + 1}',
+                                style: _textStyle,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: RichText(
-                        text: TextSpan(
-                          style: textStyle,
-                          children: _convert(nodes),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            style: _textStyle,
+                            children: _convert(_nodes),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            SingleChildScrollView(
-              controller: _textFieldScrollController,
-              child: RawKeyboardListener(
-                focusNode: FocusNode(),
-                onKey: _keyboardOnKey,
+              SingleChildScrollView(
+                controller: _textFieldScrollController,
                 child: CupertinoTextField(
                   controller: widget.controller,
                   padding: const EdgeInsets.only(left: 50),
                   maxLines: null,
                   expands: true,
                   decoration: const BoxDecoration(color: Color(0x00000000)),
-                  style: textStyle.copyWith(color: const Color(0x00000000)),
+                  style: _textStyle.copyWith(color: const Color(0x00000000)),
                   onChanged: (text) => setState(() => source = text),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 
   List<TextSpan> _convert(List<Node> nodes) {
     List<TextSpan> spans = [];
@@ -161,11 +145,14 @@ class _ScriptEditorState extends State<ScriptEditor> {
     return spans;
   }
 
-  void _keyboardOnKey(RawKeyEvent event) {
-    print(event.data.logicalKey.keyLabel);
-    switch (event.data.logicalKey.keyLabel) {
-      case 'Enter':
-        break;
-    }
-  }
+  TextStyle get _textStyle => TextStyle(
+        color: widget.theme[ScriptEditor._rootKey]?.color,
+        height: 1.4,
+        letterSpacing: 0.4,
+        fontSize: 14,
+        fontFamily: 'D2Coding',
+      );
+
+  List<Node> get _nodes =>
+      highlight.parse(source, language: widget.language).nodes!;
 }

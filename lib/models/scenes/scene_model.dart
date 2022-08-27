@@ -5,6 +5,17 @@ class SceneModel {
 
   factory SceneModel.initial() => SceneModel('', '', '');
 
+  SceneModel copyWith({
+    String? type,
+    String? fileName,
+    String? content,
+  }) =>
+      SceneModel(
+        type ?? this.type,
+        fileName ?? this.fileName,
+        content ?? this.content,
+      );
+
   dynamic get fromJson => json.decode(content);
 
   final String type;

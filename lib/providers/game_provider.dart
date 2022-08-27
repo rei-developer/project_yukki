@@ -20,7 +20,7 @@ class GameProvider extends StateNotifier<GameModel> {
 
   void showSceneContentIndex(List<SceneContentModel> contents) {
     for (final content in contents) {
-      print('${content.indexes} / ${content.contentId}');
+      print('${content.uuid} / ${content.indexes} / ${content.contentId}');
     }
   }
 
