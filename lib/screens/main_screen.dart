@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:mana_studio/config/scene_command_config.dart';
+import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/containers/main_container.dart';
 import 'package:mana_studio/i18n/strings.g.dart';
 
@@ -17,7 +19,10 @@ class MainScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(t.title),
+              Text(
+                t.title,
+                style: lightTextBoldStyle,
+              ),
             ],
           ),
           trailing: Wrap(
@@ -29,7 +34,13 @@ class MainScreen extends StatelessWidget {
                   size: 16,
                   color: CupertinoColors.inactiveGray,
                 ),
-                onPressed: () => print('test'),
+                onPressed: () {
+
+                  print(
+                      commandColors
+                  );
+
+                },
               ),
               CupertinoButton(
                 padding: EdgeInsets.zero,

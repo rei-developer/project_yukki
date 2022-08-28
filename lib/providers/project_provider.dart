@@ -129,6 +129,31 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     return contents;
   }
 
+  void setSceneContent(String uuid, dynamic next) {
+    List<dynamic> contents = [...state.sceneContents];
+    contents = _setSceneContents(contents, uuid, next);
+    changeSceneContent(contents);
+  }
+
+  List<dynamic> _setSceneContents(
+    List<dynamic> contents,
+    String uuid,
+    dynamic next,
+  ) =>
+      contents.map((content) {
+        if (content['uuid'] == uuid) {
+          content = next;
+        }
+        if (content['children'] != null) {
+          content['children'] = _setSceneContents(
+            content['children'],
+            uuid,
+            next,
+          );
+        }
+        return content;
+      }).toList();
+
   void swipeSceneContent(dynamic prev, dynamic next) {
     List<dynamic> contents = [...state.sceneContents];
     contents = _swipeSceneContents(contents, prev, next);

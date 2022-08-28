@@ -46,6 +46,7 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
             ),
           ],
         ),
+        icon: CupertinoIcons.command,
       );
 
   void _setCurrentData([String type = basicCommandType]) =>
@@ -73,28 +74,29 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
         ),
       );
 
-  Widget _renderSelectedCommandBox(String label, Color color) => Container(
-        decoration: BoxDecoration(color: color.withOpacity(0.2)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 5,
-          ),
-          child: Text(
-            label,
-            style: primaryTextStyle.copyWith(color: color),
+  Widget _renderSelectedCommandBox(dynamic command, Color color) =>
+      CustomTooltip(
+        Container(
+          decoration: BoxDecoration(color: color.withOpacity(0.2)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 5,
+            ),
+            child: Text(
+              _getSelectedCommandLabel(command['type']),
+              style: primaryTextStyle.copyWith(color: color),
+            ),
           ),
         ),
+        tooltip: _getSelectedCommandTooltip(command['type']),
       );
 
   List<Widget> _renderSelectedCommandItems(List<dynamic> commands) =>
       commands.map(
         (command) {
           command['uuid'] = const Uuid().v4();
-          final widget = _renderSelectedCommandBox(
-            _getSelectedCommandLabel(command['type']),
-            _color,
-          );
+          final widget = _renderSelectedCommandBox(command, _color);
           return MouseRegion(
             cursor: cursor,
             child: Draggable(
@@ -118,12 +120,15 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
   String _getSelectedCommandsLabel([String? key]) =>
       t['scene.commandType.$commandType.commands.$key'];
 
-  String _getSelectedCommandLabel([String? key]) => t['scene.command.$key'];
+  String _getSelectedCommandLabel([String? key]) =>
+      t['scene.command.$key.label'];
+
+  String _getSelectedCommandTooltip([String? key]) =>
+      t['scene.command.$key.tooltip'];
 
   List<Widget> get _renderCommands => commands.entries
       .map(
         (entry) => CustomTooltip(
-          _getCommandsLabel(entry.key),
           CupertinoButton(
             minSize: 0,
             padding: EdgeInsets.zero,
@@ -135,6 +140,7 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
             ),
             onPressed: () => _setCurrentData(entry.key),
           ),
+          tooltip: _getCommandsLabel(entry.key),
         ),
       )
       .toList();

@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mana_studio/components/common/custom_divider.dart';
 import 'package:mana_studio/components/common/custom_section.dart';
+import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/i18n/strings.g.dart';
 import 'package:mana_studio/models/project_model.dart';
@@ -31,6 +35,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
             children: _generateSceneContents(_sceneContents, true),
           ),
         ),
+        icon: CupertinoIcons.book,
       );
 
   List<Widget> _generateSceneContents(
@@ -54,10 +59,16 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
             )
             .toList(),
         if (isRoot) _renderAdditionalArea(contents, isRoot),
-      ].superJoin(const DottedLine(dashColor: primaryColor)).toList();
+      ]
+          .superJoin(
+            CustomDivider(
+              color: (isRoot ? darkColor : pitchBlackColor).withOpacity(0.2),
+            ),
+          )
+          .toList();
 
   Widget _renderSceneContentFeedback(dynamic content) {
-    final typeName = t['scene.command.${content["type"]}'];
+    final typeName = t['scene.command.${content["type"]}.label'];
     final childrenLength = (content['children'] as List<dynamic>?)?.length ?? 0;
     return Container(
       height: 30,
@@ -82,64 +93,105 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     );
   }
 
-  Widget _renderSceneContent(dynamic content, [bool isRoot = false]) =>
-      Container(
-        decoration: isRoot
-            ? BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
-              )
-            : null,
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              DragTarget(
-                onAccept: (dynamic data) async {
-                  if (data['uuid'] == content['uuid']) {
+  Widget _renderSceneContent(dynamic content, [bool isRoot = false]) {
+    final label = t['scene.command.${content['type']}.label'];
+    final uuid = content['uuid'];
+    final type = content['type'];
+    final color = getCommandColor(type);
+    final children = content['children'] as List<dynamic>?;
+    final isFolded = content['isFolded'] ?? false;
+    final hasChildren = children != null && children.isNotEmpty;
+    return Container(
+      decoration: isRoot ? BoxDecoration(color: color.withOpacity(0.1)) : null,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DragTarget(
+              onAccept: (dynamic data) async {
+                if (data['uuid'] == uuid) {
+                  return;
+                }
+                final dataChildren = data['children'];
+                if (dataChildren != null && dataChildren.length > 0) {
+                  final result = await AlertManager.show(
+                    '정말로 옮길 거니?',
+                    noLabel: '아니오',
+                  );
+                  if (result != CustomButton.positiveButton) {
                     return;
                   }
-                  final children = data['children'];
-                  if (children != null && children.length > 0) {
-                    final result = await AlertManager.show(
-                      '정말로 옮길 거니?',
-                      noLabel: '아니오',
-                    );
-                    if (result != CustomButton.positiveButton) {
-                      return;
-                    }
-                  }
-                  _projectProvider.swipeSceneContent(data, content);
-                },
-                builder: (context, _, __) => Row(
-                  children: [
-                    Text(
-                      t['scene.command.${content['type']}'],
-                      // '${t["scene.command."]} / ${content['data']}',
-                      style: primaryTextBoldStyle,
+                }
+                _projectProvider.swipeSceneContent(data, content);
+              },
+              builder: (context, _, __) => Row(
+                children: [
+                  if (!isPossibleHasChildren(type))
+                    const SizedBox(width: 10)
+                  else
+                    MouseRegion(
+                      cursor: cursor,
+                      onHover: (_) => setState(
+                        () => cursor = SystemMouseCursors.click,
+                      ),
+                      onExit: (_) => setState(
+                        () => cursor = SystemMouseCursors.grab,
+                      ),
+                      child: SizedBox(
+                        width: 10,
+                        child: CupertinoButton(
+                          minSize: 0,
+                          padding: EdgeInsets.zero,
+                          child: Icon(
+                            isFolded
+                                ? CupertinoIcons.chevron_right
+                                : CupertinoIcons.chevron_down,
+                            size: 14,
+                          ),
+                          onPressed: () {
+                            content['isFolded'] = !isFolded;
+                            _projectProvider.setSceneContent(uuid, content);
+                          },
+                        ),
+                      ),
                     ),
-                  ],
-                ),
+                  const SizedBox(width: 5),
+                  SizedBox(
+                    width: 160,
+                    child: Text(
+                      label,
+                      style: primaryTextBoldStyle.copyWith(color: color),
+                    ),
+                  ),
+                  Text('테스트입니다', style: TextStyle(color: color)),
+                ],
               ),
-              if (_isPossibleHasChildren(content['children']))
-                Container(
-                  decoration: BoxDecoration(
-                    color: darkColor,
-                    border: Border.all(
-                      color: primaryLightColor,
+            ),
+            if (!isFolded && isPossibleHasChildren(type))
+              Column(
+                children: [
+                  if (hasChildren)
+                    Container(
+                      decoration: BoxDecoration(
+                        color: darkColor,
+                        border: Border.all(
+                          color: primaryLightColor,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: _generateSceneContents(children),
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: _generateSceneContents(content['children']),
-                  ),
-                ),
-              if (_isPossibleHasChildren(content['children']))
-                _renderAdditionalArea(content),
-            ].superJoin(const SizedBox(height: 10)).toList(),
-          ),
+                  _renderAdditionalArea(content),
+                ].superJoin(const SizedBox(height: 10)).toList(),
+              ),
+          ].superJoin(const SizedBox(height: 10)).toList(),
         ),
-      );
+      ),
+    );
+  }
 
   Widget _renderAdditionalArea([
     dynamic content,
@@ -170,9 +222,6 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
           ),
         ),
       );
-
-  bool _isPossibleHasChildren(List<dynamic>? children) =>
-      children != null && children.isNotEmpty;
 
   String get _sceneName => _projectState.sceneName;
 

@@ -19,6 +19,8 @@ class DebuggerProvider extends StateNotifier<List<DebuggerModel>> {
           description: description,
         ),
       ];
+
+  void clear() => state = [];
 }
 
 final debuggerProvider =

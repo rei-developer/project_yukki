@@ -1,5 +1,5 @@
 {
-  "title": "Mana Studio",
+  "title": "Mana Studio - Visual Novel Engine with Blockchain",
   "headers": {
     "scene": "Scene [${sceneName}.json]",
     "commands": "Scene Commands",
@@ -24,12 +24,38 @@
       }
     },
     "command": {
-      "IF": "If",
-      "ELSE_IF": "Else If",
-      "ELSE": "Else",
-      "WAIT": "Wait",
-      "SHOW_MESSAGE": "Show Message",
-      "COMMENT": "Comment"
+      "IF": {
+        "label": "If",
+        "tooltip": "When this condition is met, the scene moves to that block."
+      },
+      "ELSE_IF": {
+        "label": "Else If",
+        "tooltip": "If this condition, not the parent condition, is met, the scene moves to that block."
+      },
+      "ELSE": {
+        "label": "Else",
+        "tooltip": "If the parent condition is not met, the scene moves to that block."
+      },
+      "WAIT": {
+        "label": "Wait",
+        "tooltip": "Pauses the scene by a set value."
+      },
+      "SHOW_MESSAGE": {
+        "label": "Show Message",
+        "tooltip": "Show the message."
+      },
+      "COMMENT": {
+        "label": "Comment",
+        "tooltip": "Write comments. Those comments are not visible in the scene."
+      }
     }
+  },
+  "debugger": {
+    "pin": "Fixes the scroll position.",
+    "up": "Move the scroll position up slightly.",
+    "upToLine": "Moves the scroll position to the top.",
+    "down": "Move the scroll position down slightly.",
+    "downToLine": "Moves the scroll position to the bottom.",
+    "trash": "Clear all logs."
   }
 }

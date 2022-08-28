@@ -26,6 +26,36 @@ const showMessageCommand = 'SHOW_MESSAGE';
 const commentCommand = 'COMMENT';
 // ------------------------------------------------------------
 
+bool isPossibleHasChildren(String type) => [
+      ifCommand,
+      elseIfCommand,
+      elseCommand,
+    ].contains(type);
+
+Color getCommandColor(String type) {
+  final findIndex = commandColors.indexWhere(
+    (e) => (e['commands'] as List<dynamic>).contains(type),
+  );
+  if (findIndex < 0) {
+    return primaryColor;
+  }
+  return commandColors[findIndex]['color'];
+}
+
+List<Map<String, dynamic>> commandColors = commands.entries
+    .map(
+      (e) => {
+        "color": e.value['color'],
+        "commands": ((e.value['commands'] as Map<String, dynamic>)
+                .entries
+                .map((c) => c.value.map((i) => i['type']))
+                .toList())
+            .expand((c) => c)
+            .toList()
+      },
+    )
+    .toList();
+
 Map<String, dynamic> commands = {
   basicCommandType: {
     "color": primaryColor,

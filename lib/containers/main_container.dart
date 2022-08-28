@@ -26,7 +26,7 @@ class _MainContainerState extends ConsumerState<MainContainer> {
   @override
   Widget build(BuildContext context) => CustomResizableWidget(
         [
-          Container(),
+          Image.asset('assets/images/logo.png'),
           const CustomResizableWidget(
             [
               SceneManageComponent(),
