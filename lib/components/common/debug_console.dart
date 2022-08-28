@@ -9,9 +9,7 @@ import 'package:mana_studio/providers/debugger_provider.dart';
 import 'package:mana_studio/utils/func.dart';
 
 class DebugConsole extends ConsumerStatefulWidget {
-  const DebugConsole(this.height, {Key? key}) : super(key: key);
-
-  final double height;
+  const DebugConsole({Key? key}) : super(key: key);
 
   @override
   ConsumerState<DebugConsole> createState() => _DebugConsoleState();
@@ -20,14 +18,13 @@ class DebugConsole extends ConsumerStatefulWidget {
 class _DebugConsoleState extends ConsumerState<DebugConsole> {
   @override
   Widget build(BuildContext context) => CustomSection(
-        t.debug.header,
+        t.headers.debugger,
         ListView(
           controller: ScrollController(),
           children: [
             ..._renderDebugConsole,
           ].superJoin(const SizedBox(height: 5)).toList(),
         ),
-        height: widget.height,
       );
 
   List<Widget> get _renderDebugConsole => _logs

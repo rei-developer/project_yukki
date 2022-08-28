@@ -11,9 +11,7 @@ import 'package:dotted_line/dotted_line.dart';
 import 'package:mana_studio/utils/managers/alert_manager.dart';
 
 class SceneManageComponent extends ConsumerStatefulWidget {
-  const SceneManageComponent(this.height, {Key? key}) : super(key: key);
-
-  final double height;
+  const SceneManageComponent({Key? key}) : super(key: key);
 
   @override
   ConsumerState<SceneManageComponent> createState() =>
@@ -25,7 +23,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
 
   @override
   Widget build(BuildContext context) => CustomSection(
-        t.scene.header(sceneName: _sceneName),
+        t.headers.scene(sceneName: _sceneName),
         MouseRegion(
           cursor: cursor,
           child: ListView(
@@ -33,7 +31,6 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
             children: _generateSceneContents(_sceneContents, true),
           ),
         ),
-        height: widget.height,
       );
 
   List<Widget> _generateSceneContents(

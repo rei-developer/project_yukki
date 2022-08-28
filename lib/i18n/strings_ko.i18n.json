@@ -1,23 +1,35 @@
 {
-  "title": "마나 스튜디오",
+  "title": "Mana Studio",
+  "headers": {
+    "scene": "Scene [${sceneName}.json]",
+    "commands": "Scene Commands",
+    "debugger": "Debug Console"
+  },
   "scene": {
-    "header": "씬 [${sceneName}.json]",
-    "children": "자식",
-    "add": "이곳에 새 콘텐츠를 드롭하세요...",
+    "children": "Children",
+    "add": "Drop new content here...",
     "commandType": {
-      "basic": "기본",
-      "condition": "조건"
+      "BASIC": {
+        "label": "Basic",
+        "commands": {
+          "CONDITIONAL_BRANCH": "Conditional Branch",
+          "CONTROL_FLOW": "Control Flow"
+        }
+      },
+      "MESSAGE": {
+        "label": "Message",
+        "commands": {
+          "MESSAGE": "Message"
+        }
+      }
     },
     "command": {
-      "SHOW_MESSAGE": "대화 보여주기",
-      "WAIT": "대기",
-      "COMMENT": "주석",
-      "IF": "만약",
-      "ELSE_IF": "그렇지 않고 만약",
-      "ELSE": "그렇지 않으면"
+      "IF": "If",
+      "ELSE_IF": "Else If",
+      "ELSE": "Else",
+      "WAIT": "Wait",
+      "SHOW_MESSAGE": "Show Message",
+      "COMMENT": "Comment"
     }
-  },
-  "debug": {
-    "header": "디버그 콘솔"
   }
 }

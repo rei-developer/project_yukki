@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mana_studio/components/common/custom_resizable_widget.dart';
 import 'package:mana_studio/components/common/debug_console.dart';
 import 'package:mana_studio/components/main/scene_manage/scene_command_component.dart';
 import 'package:mana_studio/components/main/scene_manage/scene_manage_component.dart';
@@ -23,29 +24,22 @@ class _MainContainerState extends ConsumerState<MainContainer> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(child: Container()),
-          Row(
-            children: [
-              const Expanded(child: SceneManageComponent(480)),
-              const SizedBox(width: 10),
-              SizedBox(
-                width: 400,
-                height: 480,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
-                    Expanded(child: SceneCommandComponent(270)),
-                    SizedBox(height: 10),
-                    DebugConsole(200),
-                  ],
-                ),
+  Widget build(BuildContext context) => CustomResizableWidget(
+        [
+          Container(),
+          const CustomResizableWidget(
+            [
+              SceneManageComponent(),
+              CustomResizableWidget(
+                [
+                  SceneCommandComponent(),
+                  DebugConsole(),
+                ],
+                percentages: [0.6, 0.4],
+                isHorizontal: true,
               ),
             ],
+            percentages: [0.8, 0.2],
           ),
 
           // CupertinoButton.filled(
@@ -61,6 +55,7 @@ class _MainContainerState extends ConsumerState<MainContainer> {
           //   onPressed: () => _gameProvider.nextSceneContent(),
           // ),
         ],
+        isHorizontal: true,
       );
 
   List<dynamic> get _sceneData => _gameState.contents;

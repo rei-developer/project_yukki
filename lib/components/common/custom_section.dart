@@ -18,7 +18,7 @@ class CustomSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
         width: width,
-        height: height ?? 40,
+        height: height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

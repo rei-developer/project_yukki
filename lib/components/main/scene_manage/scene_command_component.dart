@@ -10,9 +10,7 @@ import 'package:mana_studio/utils/func.dart';
 import 'package:uuid/uuid.dart';
 
 class SceneCommandComponent extends ConsumerStatefulWidget {
-  const SceneCommandComponent(this.height, {Key? key}) : super(key: key);
-
-  final double height;
+  const SceneCommandComponent({Key? key}) : super(key: key);
 
   @override
   ConsumerState<SceneCommandComponent> createState() =>
@@ -20,9 +18,7 @@ class SceneCommandComponent extends ConsumerStatefulWidget {
 }
 
 class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
-  String currentType = basicCommandType;
-  Color currentColor = primaryColor;
-  List<Map<String, dynamic>> currentCommands = [];
+  String commandType = basicCommandType;
   MouseCursor cursor = SystemMouseCursors.grab;
 
   @override
@@ -33,9 +29,9 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
 
   @override
   Widget build(BuildContext context) => CustomSection(
-        'Scene Commands',
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        '${t.headers.commands} - ${_getCommandsLabel()}',
+        ListView(
+          controller: ScrollController(),
           children: [
             Wrap(
               children: [
@@ -43,46 +39,41 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
               ].superJoin(const SizedBox(width: 5)).toList(),
             ),
             const SizedBox(height: 20),
-            Wrap(
+            Column(
               children: [
-                ..._renderCurrentCommands,
-              ].superJoin(const SizedBox(width: 5)).toList(),
+                ..._renderSelectedCommands,
+              ].superJoin(const SizedBox(height: 10)).toList(),
             ),
           ],
         ),
-        height: widget.height,
       );
 
-  void _setCurrentData([String currentType = basicCommandType]) => setState(
-        () {
-          currentType = currentType;
-          currentColor = commands[currentType]['color'];
-          currentCommands = commands[currentType]['commands'];
-        },
-      );
+  void _setCurrentData([String type = basicCommandType]) =>
+      setState(() => commandType = type);
 
   Widget _renderCommandBox(
     IconData icon,
+    IconData activatedIcon,
     Color color,
     bool isActivated,
   ) =>
       Container(
         decoration: BoxDecoration(
-          color: color.withOpacity(0.2),
+          color: color.withOpacity(isActivated ? 0.3 : 0.1),
           border: Border.all(color: color),
           borderRadius: const BorderRadius.all(Radius.circular(5)),
         ),
         child: Padding(
           padding: const EdgeInsets.all(2),
           child: Icon(
-            icon,
+            isActivated ? activatedIcon : icon,
             size: 16,
             color: color,
           ),
         ),
       );
 
-  Widget _renderCurrentCommandBox(String label, Color color) => Container(
+  Widget _renderSelectedCommandBox(String label, Color color) => Container(
         decoration: BoxDecoration(color: color.withOpacity(0.2)),
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -96,35 +87,18 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
         ),
       );
 
-  List<Widget> get _renderCommands => commands.entries.map(
-        (entry) {
-          final label = t['scene.commandType.${entry.key}'];
-          return CustomTooltip(
-            label,
-            CupertinoButton(
-              minSize: 0,
-              padding: EdgeInsets.zero,
-              child: _renderCommandBox(
-                entry.value['icon'],
-                entry.value['color'],
-                entry.key == currentType,
-              ),
-              onPressed: () => _setCurrentData(entry.key),
-            ),
-          );
-        },
-      ).toList();
-
-  // const DottedLine(dashColor: primaryColor),
-
-  List<Widget> get _renderCurrentCommands => currentCommands.map(
+  List<Widget> _renderSelectedCommandItems(List<dynamic> commands) =>
+      commands.map(
         (command) {
           command['uuid'] = const Uuid().v4();
-          final label = t['scene.command.${command["type"]}'];
+          final widget = _renderSelectedCommandBox(
+            _getSelectedCommandLabel(command['type']),
+            _color,
+          );
           return MouseRegion(
             cursor: cursor,
             child: Draggable(
-              feedback: _renderCurrentCommandBox(label, currentColor),
+              feedback: widget,
               data: command,
               onDragStarted: () => setState(
                 () => cursor = SystemMouseCursors.grabbing,
@@ -132,9 +106,66 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
               onDragEnd: (_) => setState(
                 () => cursor = SystemMouseCursors.grab,
               ),
-              child: _renderCurrentCommandBox(label, currentColor),
+              child: widget,
             ),
           );
         },
       ).toList();
+
+  String _getCommandsLabel([String? key]) =>
+      t['scene.commandType.${key ?? commandType}.label'];
+
+  String _getSelectedCommandsLabel([String? key]) =>
+      t['scene.commandType.$commandType.commands.$key'];
+
+  String _getSelectedCommandLabel([String? key]) => t['scene.command.$key'];
+
+  List<Widget> get _renderCommands => commands.entries
+      .map(
+        (entry) => CustomTooltip(
+          _getCommandsLabel(entry.key),
+          CupertinoButton(
+            minSize: 0,
+            padding: EdgeInsets.zero,
+            child: _renderCommandBox(
+              entry.value['icon'],
+              entry.value['activatedIcon'],
+              entry.value['color'],
+              entry.key == commandType,
+            ),
+            onPressed: () => _setCurrentData(entry.key),
+          ),
+        ),
+      )
+      .toList();
+
+  List<Widget> get _renderSelectedCommands => _commands.entries
+      .map(
+        (entry) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              _getSelectedCommandsLabel(entry.key),
+              style: primaryTextBoldStyle.copyWith(
+                color: _color,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: DottedLine(dashColor: _color),
+            ),
+            Wrap(
+              children: [
+                ..._renderSelectedCommandItems(entry.value),
+              ].superJoin(const SizedBox(width: 5)).toList(),
+            ),
+          ],
+        ),
+      )
+      .toList();
+
+  Color get _color => commands[commandType]['color'];
+
+  Map<String, dynamic> get _commands => commands[commandType]['commands'];
 }

@@ -1,23 +1,35 @@
 {
   "title": "Mana Studio",
+  "headers": {
+    "scene": "Scene [${sceneName}.json]",
+    "commands": "Scene Commands",
+    "debugger": "Debug Console"
+  },
   "scene": {
-    "header": "Scene [${sceneName}.json]",
     "children": "Children",
     "add": "Drop new content here...",
     "commandType": {
-      "basic": "Basic",
-      "condition": "Condition"
+      "BASIC": {
+        "label": "Basic",
+        "commands": {
+          "CONDITIONAL_BRANCH": "Conditional Branch",
+          "CONTROL_FLOW": "Control Flow"
+        }
+      },
+      "MESSAGE": {
+        "label": "Message",
+        "commands": {
+          "MESSAGE": "Message"
+        }
+      }
     },
     "command": {
-      "SHOW_MESSAGE": "Show Message",
-      "WAIT": "Wait",
-      "COMMENT": "Comment",
       "IF": "If",
       "ELSE_IF": "Else If",
-      "ELSE": "Else"
+      "ELSE": "Else",
+      "WAIT": "Wait",
+      "SHOW_MESSAGE": "Show Message",
+      "COMMENT": "Comment"
     }
-  },
-  "debug": {
-    "header": "Debug Console"
   }
 }

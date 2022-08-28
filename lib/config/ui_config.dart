@@ -4,6 +4,7 @@ const primaryColor = Color(0xFFEDA7B2);
 const primaryLightColor = Color(0xFFF1C8CF);
 const lightColor = Color(0xFFFFFFFF);
 const darkColor = Color(0xFF222222);
+const transparentColor = Color(0x00FFFFFF);
 
 TextStyle get primaryTextStyle => _textStyle();
 
