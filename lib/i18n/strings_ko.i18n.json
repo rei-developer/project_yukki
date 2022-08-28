@@ -20,7 +20,7 @@
   },
   "scene": {
     "children": "자식",
-    "add": "이곳에 새 콘텐츠를 드롭하세요...",
+    "add": "이곳에 명령어를 드롭하세요...",
     "commandType": {
       "BASIC": {
         "label": "기본",

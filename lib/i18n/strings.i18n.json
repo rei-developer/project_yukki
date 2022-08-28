@@ -20,7 +20,7 @@
   },
   "scene": {
     "children": "Children",
-    "add": "Drop new content here...",
+    "add": "Drop command here...",
     "commandType": {
       "BASIC": {
         "label": "Basic",

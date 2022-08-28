@@ -11,6 +11,7 @@ import 'package:mana_studio/models/scenes/scene_model.dart';
 import 'package:mana_studio/models/scenes/scenes_model.dart';
 import 'package:mana_studio/models/script_model.dart';
 import 'package:mana_studio/models/scripts_model.dart';
+import 'package:mana_studio/providers/audio_player_provider.dart';
 import 'package:mana_studio/providers/debugger_provider.dart';
 import 'package:mana_studio/providers/game_provider.dart';
 import 'package:mana_studio/utils/loaders/scene_loader.dart';
@@ -134,7 +135,7 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
   void setSceneContent(String uuid, dynamic next) {
     List<dynamic> contents = [...state.sceneContents];
     contents = _setSceneContents(contents, uuid, next);
-    changeSceneContent(contents);
+    changeSceneContent(contents, false);
   }
 
   List<dynamic> _setSceneContents(
@@ -161,7 +162,7 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
   void setAllSceneContent(String key, dynamic value) {
     List<dynamic> contents = [...state.sceneContents];
     contents = _setAllSceneContents(contents, key, value);
-    changeSceneContent(contents);
+    changeSceneContent(contents, false);
   }
 
   List<dynamic> _setAllSceneContents(
@@ -216,7 +217,7 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
         },
       ).toList();
 
-  void changeSceneContent(dynamic content) {
+  void changeSceneContent(dynamic content, [bool isPlaySound = true]) {
     if (_findLocalSceneIndex < 0) {
       return;
     }
@@ -224,13 +225,16 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     scenes[_findLocalSceneIndex] = scenes[_findLocalSceneIndex].copyWith(
       content: json.encode(content),
     );
+    if (isPlaySound) {
+      _audioProvider.setSE('sound12.mp3');
+    }
     setLocalScenes(scenes);
   }
 
   void removeSceneContent(String uuid) {
     List<dynamic> contents = [...state.sceneContents];
     contents = _removeSceneContent(contents, uuid);
-    changeSceneContent(contents);
+    changeSceneContent(contents, false);
   }
 
   List<dynamic> _removeSceneContent(List<dynamic> contents, String uuid) =>
@@ -278,11 +282,14 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
   void setScripts(ScriptsModel scripts) =>
       state = state.copyWith(scripts: scripts);
 
-  void clearSceneContent() => changeSceneContent([]);
+  void clearSceneContent() => changeSceneContent([], false);
 
   int get _findLocalSceneIndex => state.scenes.localScenes.indexWhere(
         (e) => e.fileName == state.sceneName,
       );
+
+  AudioPlayerProvider get _audioProvider =>
+      ref.read(audioPlayerProvider.notifier);
 
   GameProvider get _gameProvider => ref.read(gameProvider.notifier);
 
