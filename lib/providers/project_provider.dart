@@ -102,22 +102,24 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     dynamic prev,
     dynamic next,
   ) =>
-      contents.map((content) {
-        if (content['children'] != null) {
-          if (content['uuid'] == next['uuid']) {
-            content['children'] = _addSceneContentNewItem(
+      contents.map(
+        (content) {
+          if (content['children'] != null) {
+            if (content['uuid'] == next['uuid']) {
+              content['children'] = _addSceneContentNewItem(
+                content['children'],
+                prev,
+              );
+            }
+            content['children'] = _addSceneContent(
               content['children'],
               prev,
+              next,
             );
           }
-          content['children'] = _addSceneContent(
-            content['children'],
-            prev,
-            next,
-          );
-        }
-        return content;
-      }).toList();
+          return content;
+        },
+      ).toList();
 
   List<dynamic> _addSceneContentNewItem(
     List<dynamic> contents,
@@ -140,19 +142,46 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     String uuid,
     dynamic next,
   ) =>
-      contents.map((content) {
-        if (content['uuid'] == uuid) {
-          content = next;
-        }
-        if (content['children'] != null) {
-          content['children'] = _setSceneContents(
-            content['children'],
-            uuid,
-            next,
-          );
-        }
-        return content;
-      }).toList();
+      contents.map(
+        (content) {
+          if (content['uuid'] == uuid) {
+            content = next;
+          }
+          if (content['children'] != null) {
+            content['children'] = _setSceneContents(
+              content['children'],
+              uuid,
+              next,
+            );
+          }
+          return content;
+        },
+      ).toList();
+
+  void setAllSceneContent(String key, dynamic value) {
+    List<dynamic> contents = [...state.sceneContents];
+    contents = _setAllSceneContents(contents, key, value);
+    changeSceneContent(contents);
+  }
+
+  List<dynamic> _setAllSceneContents(
+    List<dynamic> contents,
+    String key,
+    dynamic value,
+  ) =>
+      contents.map(
+        (content) {
+          content[key] = value;
+          if (content['children'] != null) {
+            content['children'] = _setAllSceneContents(
+              content['children'],
+              key,
+              value,
+            );
+          }
+          return content;
+        },
+      ).toList();
 
   void swipeSceneContent(dynamic prev, dynamic next) {
     List<dynamic> contents = [...state.sceneContents];
@@ -165,39 +194,61 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     dynamic prev,
     dynamic next,
   ) =>
-      contents.map((content) {
-        content['temp'] = content['uuid'];
-        if (content['temp'] == prev['uuid']) {
-          content = next;
-          content['temp'] = prev['uuid'];
-        }
-        if (content['temp'] == next['uuid']) {
-          content = prev;
-          content['temp'] = next['uuid'];
-        }
-        if (content['children'] != null) {
-          content['children'] = _swipeSceneContents(
-            content['children'],
-            prev,
-            next,
-          );
-        }
-        return content;
-      }).toList();
+      contents.map(
+        (content) {
+          content['temp'] = content['uuid'];
+          if (content['temp'] == prev['uuid']) {
+            content = next;
+            content['temp'] = prev['uuid'];
+          }
+          if (content['temp'] == next['uuid']) {
+            content = prev;
+            content['temp'] = next['uuid'];
+          }
+          if (content['children'] != null) {
+            content['children'] = _swipeSceneContents(
+              content['children'],
+              prev,
+              next,
+            );
+          }
+          return content;
+        },
+      ).toList();
 
   void changeSceneContent(dynamic content) {
-    final findIndex = state.scenes.localScenes.indexWhere(
-      (e) => e.fileName == state.sceneName,
-    );
-    if (findIndex < 0) {
+    if (_findLocalSceneIndex < 0) {
       return;
     }
     List<SceneModel> scenes = [...state.scenes.localScenes];
-    scenes[findIndex] = scenes[findIndex].copyWith(
+    scenes[_findLocalSceneIndex] = scenes[_findLocalSceneIndex].copyWith(
       content: json.encode(content),
     );
     setLocalScenes(scenes);
   }
+
+  void removeSceneContent(String uuid) {
+    List<dynamic> contents = [...state.sceneContents];
+    contents = _removeSceneContent(contents, uuid);
+    changeSceneContent(contents);
+  }
+
+  List<dynamic> _removeSceneContent(List<dynamic> contents, String uuid) =>
+      contents
+          .map(
+            (content) {
+              if (content['uuid'] == uuid) {
+                return null;
+              }
+              if (content['children'] != null) {
+                content['children'] =
+                    _removeSceneContent(content['children'], uuid);
+              }
+              return content;
+            },
+          )
+          .where((e) => e != null)
+          .toList();
 
   Future<void> generateLocalScripts() async {
     List<ScriptModel> localScripts = [];
@@ -226,6 +277,12 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
 
   void setScripts(ScriptsModel scripts) =>
       state = state.copyWith(scripts: scripts);
+
+  void clearSceneContent() => changeSceneContent([]);
+
+  int get _findLocalSceneIndex => state.scenes.localScenes.indexWhere(
+        (e) => e.fileName == state.sceneName,
+      );
 
   GameProvider get _gameProvider => ref.read(gameProvider.notifier);
 

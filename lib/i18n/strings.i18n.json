@@ -1,5 +1,18 @@
 {
   "title": "Mana Studio - Visual Novel Engine with Blockchain",
+  "common": {
+    "pin": "Fixes the scroll position.",
+    "unpin": "Unfixes the scroll position.",
+    "lock": "Lock it so that it cannot be edited.",
+    "unlock": "Unlock it so that it can be edited.",
+    "fold": "Collapse all items.",
+    "unfold": "Expand all items.",
+    "up": "Move the scroll position up slightly.",
+    "upToLine": "Moves the scroll position to the top.",
+    "down": "Move the scroll position down slightly.",
+    "downToLine": "Moves the scroll position to the bottom.",
+    "clear": "Clear all items."
+  },
   "headers": {
     "scene": "Scene [${sceneName}.json]",
     "commands": "Scene Commands",
@@ -49,13 +62,5 @@
         "tooltip": "Write comments. Those comments are not visible in the scene."
       }
     }
-  },
-  "debugger": {
-    "pin": "Fixes the scroll position.",
-    "up": "Move the scroll position up slightly.",
-    "upToLine": "Moves the scroll position to the top.",
-    "down": "Move the scroll position down slightly.",
-    "downToLine": "Moves the scroll position to the bottom.",
-    "trash": "Clear all logs."
   }
 }

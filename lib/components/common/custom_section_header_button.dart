@@ -1,25 +1,32 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mana_studio/components/common/custom_tooltip.dart';
 import 'package:mana_studio/config/ui_config.dart';
+import 'package:mana_studio/providers/audio_player_provider.dart';
 
-class CustomSectionHeaderButton extends StatefulWidget {
+class CustomSectionHeaderButton extends ConsumerStatefulWidget {
   const CustomSectionHeaderButton({
     this.icon = CupertinoIcons.xmark,
+    this.audioPath = 'move.mp3',
     this.tooltip,
+    this.isPlaySoundAfterPong = false,
     this.callback,
     Key? key,
   }) : super(key: key);
 
   final IconData icon;
+  final String? audioPath;
   final String? tooltip;
-  final VoidCallback? callback;
+  final bool isPlaySoundAfterPong;
+  final Function(VoidCallback? pong)? callback;
 
   @override
-  State<CustomSectionHeaderButton> createState() =>
+  ConsumerState<CustomSectionHeaderButton> createState() =>
       _CustomSectionHeaderButtonState();
 }
 
-class _CustomSectionHeaderButtonState extends State<CustomSectionHeaderButton> {
+class _CustomSectionHeaderButtonState
+    extends ConsumerState<CustomSectionHeaderButton> {
   @override
   Widget build(BuildContext context) => CustomTooltip(
         Container(
@@ -37,9 +44,23 @@ class _CustomSectionHeaderButtonState extends State<CustomSectionHeaderButton> {
               height: 16,
               child: Icon(widget.icon, size: 12, color: primaryColor),
             ),
-            onPressed: () => widget.callback?.call(),
+            onPressed: () {
+              if (widget.audioPath != null && !widget.isPlaySoundAfterPong) {
+                _audioProvider.setSE(widget.audioPath!);
+              }
+              widget.callback?.call(
+                () {
+                  if (widget.audioPath != null) {
+                    _audioProvider.setSE(widget.audioPath!);
+                  }
+                },
+              );
+            },
           ),
         ),
         tooltip: widget.tooltip,
       );
+
+  AudioPlayerProvider get _audioProvider =>
+      ref.read(audioPlayerProvider.notifier);
 }

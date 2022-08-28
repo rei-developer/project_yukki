@@ -1,61 +1,66 @@
 {
   "title": "Mana Studio - Visual Novel Engine with Blockchain",
+  "common": {
+    "pin": "스크롤 위치를 고정합니다.",
+    "unpin": "스크롤 위치를 고정 해제합니다.",
+    "lock": "편집할 수 없도록 잠급니다.",
+    "unlock": "편집할 수 있도록 잠금을 해제합니다.",
+    "fold": "모든 항목을 접습니다.",
+    "unfold": "모든 항목을 펼칩니다.",
+    "up": "스크롤 위치를 약간 위로 이동합니다.",
+    "upToLine": "스크롤 위치를 맨 위로 이동합니다.",
+    "down": "스크롤 위치를 약간 아래로 이동합니다.",
+    "downToLine": "스크롤 위치를 맨 아래로 이동합니다.",
+    "clear": "모든 항목을 지웁니다."
+  },
   "headers": {
-    "scene": "Scene [${sceneName}.json]",
-    "commands": "Scene Commands",
-    "debugger": "Debug Console"
+    "scene": "장면 [${sceneName}.json]",
+    "commands": "장면 명령어",
+    "debugger": "디버그 콘솔"
   },
   "scene": {
-    "children": "Children",
-    "add": "Drop new content here...",
+    "children": "자식",
+    "add": "이곳에 새 콘텐츠를 드롭하세요...",
     "commandType": {
       "BASIC": {
-        "label": "Basic",
+        "label": "기본",
         "commands": {
-          "CONDITIONAL_BRANCH": "Conditional Branch",
-          "CONTROL_FLOW": "Control Flow"
+          "CONDITIONAL_BRANCH": "조건 분기",
+          "CONTROL_FLOW": "제어 흐름"
         }
       },
       "MESSAGE": {
-        "label": "Message",
+        "label": "메시지",
         "commands": {
-          "MESSAGE": "Message"
+          "MESSAGE": "메시지"
         }
       }
     },
     "command": {
       "IF": {
-        "label": "If",
-        "tooltip": "When this condition is met, the scene moves to that block."
+        "label": "만약",
+        "tooltip": "이 조건이 충족되면 장면이 해당 블록으로 이동합니다."
       },
       "ELSE_IF": {
-        "label": "Else If",
-        "tooltip": "If this condition, not the parent condition, is met, the scene moves to that block."
+        "label": "그렇지 않고 만약",
+        "tooltip": "상위 조건이 아닌 이 조건이 충족되면 장면이 해당 블록으로 이동합니다."
       },
       "ELSE": {
-        "label": "Else",
-        "tooltip": "If the parent condition is not met, the scene moves to that block."
+        "label": "그렇지 않으면",
+        "tooltip": "상위 조건이 충족되지 않으면 장면이 해당 블록으로 이동합니다."
       },
       "WAIT": {
-        "label": "Wait",
-        "tooltip": "Pauses the scene by a set value."
+        "label": "대기",
+        "tooltip": "설정된 값만큼 장면을 일시 중지합니다."
       },
       "SHOW_MESSAGE": {
-        "label": "Show Message",
-        "tooltip": "Show the message."
+        "label": "메시지 표시",
+        "tooltip": "메시지를 표시합니다."
       },
       "COMMENT": {
-        "label": "Comment",
-        "tooltip": "Write comments. Those comments are not visible in the scene."
+        "label": "주석",
+        "tooltip": "주석을 작성합니다. 해당 주석은 게임에서 볼 수 없습니다."
       }
     }
-  },
-  "debugger": {
-    "pin": "Fixes the scroll position.",
-    "up": "Move the scroll position up slightly.",
-    "upToLine": "Moves the scroll position to the top.",
-    "down": "Move the scroll position down slightly.",
-    "downToLine": "Moves the scroll position to the bottom.",
-    "trash": "Clear all logs."
   }
 }

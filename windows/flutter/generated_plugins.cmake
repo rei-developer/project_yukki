@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   flutter_js
   flutter_platform_alert
+  just_audio_windows
   screen_retriever
   url_launcher_windows
   window_manager

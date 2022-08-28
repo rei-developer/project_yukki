@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
-import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/containers/main_container.dart';
 import 'package:mana_studio/i18n/strings.g.dart';
+import 'package:mana_studio/utils/func.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -28,21 +28,18 @@ class MainScreen extends StatelessWidget {
           trailing: Wrap(
             children: [
               CupertinoButton(
+                minSize: 0,
                 padding: EdgeInsets.zero,
                 child: const Icon(
                   CupertinoIcons.at,
                   size: 16,
                   color: CupertinoColors.inactiveGray,
                 ),
-                onPressed: () {
-
-                  print(
-                      commandColors
-                  );
-
-                },
+                onPressed: () => print('test'),
               ),
+              const SizedBox(width: 10),
               CupertinoButton(
+                minSize: 0,
                 padding: EdgeInsets.zero,
                 child: const Icon(
                   CupertinoIcons.star,

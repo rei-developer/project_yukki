@@ -6,6 +6,7 @@ import 'package:mana_studio/components/main/scene_manage/scene_command_component
 import 'package:mana_studio/components/main/scene_manage/scene_manage_component.dart';
 import 'package:mana_studio/models/game_model.dart';
 import 'package:mana_studio/models/project_model.dart';
+import 'package:mana_studio/providers/audio_player_provider.dart';
 import 'package:mana_studio/providers/game_provider.dart';
 import 'package:mana_studio/providers/project_provider.dart';
 
@@ -26,7 +27,8 @@ class _MainContainerState extends ConsumerState<MainContainer> {
   @override
   Widget build(BuildContext context) => CustomResizableWidget(
         [
-          Image.asset('assets/images/logo.png'),
+          // Image.asset('assets/images/logo.png'),
+          Image.asset('assets/images/sample.png'),
           const CustomResizableWidget(
             [
               SceneManageComponent(),
@@ -41,7 +43,6 @@ class _MainContainerState extends ConsumerState<MainContainer> {
             ],
             percentages: [0.8, 0.2],
           ),
-
           // CupertinoButton.filled(
           //   child: const Text('새 프로젝트 생성'),
           //   onPressed: () => _projectProvider.generateProject(),
@@ -59,6 +60,9 @@ class _MainContainerState extends ConsumerState<MainContainer> {
       );
 
   List<dynamic> get _sceneData => _gameState.contents;
+
+  AudioPlayerProvider get _audioProvider =>
+      ref.read(audioPlayerProvider.notifier);
 
   ProjectProvider get _projectProvider => ref.read(projectProvider.notifier);
 

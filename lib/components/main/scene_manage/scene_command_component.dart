@@ -6,6 +6,7 @@ import 'package:mana_studio/components/common/custom_tooltip.dart';
 import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/i18n/strings.g.dart';
+import 'package:mana_studio/providers/audio_player_provider.dart';
 import 'package:mana_studio/utils/func.dart';
 import 'package:uuid/uuid.dart';
 
@@ -49,8 +50,13 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
         icon: CupertinoIcons.command,
       );
 
-  void _setCurrentData([String type = basicCommandType]) =>
-      setState(() => commandType = type);
+  void _setCurrentData([String type = basicCommandType]) {
+    if (type == commandType) {
+      return;
+    }
+    _audioProvider.setSE('move.mp3');
+    setState(() => commandType = type);
+  }
 
   Widget _renderCommandBox(
     IconData icon,
@@ -174,4 +180,7 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
   Color get _color => commands[commandType]['color'];
 
   Map<String, dynamic> get _commands => commands[commandType]['commands'];
+
+  AudioPlayerProvider get _audioProvider =>
+      ref.read(audioPlayerProvider.notifier);
 }

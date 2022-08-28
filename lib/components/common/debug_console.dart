@@ -36,33 +36,34 @@ class _DebugConsoleState extends ConsumerState<DebugConsole> {
       headerButtons: [
         CustomSectionHeaderButton(
           icon: isPined ? CupertinoIcons.pin_fill : CupertinoIcons.pin_slash,
-          tooltip: t.debugger.pin,
-          callback: () => setState(() => isPined = !isPined),
+          tooltip: isPined ? t.common.unpin : t.common.pin,
+          callback: (_) => setState(() => isPined = !isPined),
         ),
         CustomSectionHeaderButton(
           icon: CupertinoIcons.arrow_up,
-          tooltip: t.debugger.up,
-          callback: () => _upperScrollTo(-100),
+          tooltip: t.common.up,
+          callback: (_) => _upperScrollTo(-100),
         ),
         CustomSectionHeaderButton(
           icon: CupertinoIcons.arrow_up_to_line,
-          tooltip: t.debugger.upToLine,
-          callback: () => _animateTo(0),
+          tooltip: t.common.upToLine,
+          callback: (_) => _animateTo(0),
         ),
         CustomSectionHeaderButton(
           icon: CupertinoIcons.arrow_down,
-          tooltip: t.debugger.down,
-          callback: () => _upperScrollTo(100),
+          tooltip: t.common.down,
+          callback: (_) => _upperScrollTo(100),
         ),
         CustomSectionHeaderButton(
           icon: CupertinoIcons.arrow_down_to_line,
-          tooltip: t.debugger.downToLine,
-          callback: () => _animateTo(),
+          tooltip: t.common.downToLine,
+          callback: (_) => _animateTo(),
         ),
         CustomSectionHeaderButton(
           icon: CupertinoIcons.trash_fill,
-          tooltip: t.debugger.trash,
-          callback: () => _debuggerProvider.clear(),
+          audioPath: 'se5.wav',
+          tooltip: t.common.clear,
+          callback: (_) => _debuggerProvider.clear(),
         ),
       ],
     );
