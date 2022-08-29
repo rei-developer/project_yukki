@@ -48,6 +48,7 @@ dependencies:
   slang: ^2.6.1
   slang_flutter: ^2.6.0
   flutter_js: ^0.5.0+6
+  flutter_typeahead: ^4.0.0
   flutter_platform_alert: ^0.3.0
   flutter_riverpod: ^1.0.4
   flutter_highlight: ^0.7.0

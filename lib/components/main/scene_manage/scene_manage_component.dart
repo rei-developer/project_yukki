@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mana_studio/components/common/custom_autocomplete.dart';
 import 'package:mana_studio/components/common/custom_divider.dart';
+import 'package:mana_studio/components/common/custom_icon_button.dart';
 import 'package:mana_studio/components/common/custom_section.dart';
 import 'package:mana_studio/components/common/custom_section_header_button.dart';
 import 'package:mana_studio/config/debugger_config.dart';
@@ -47,6 +49,24 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
             controller: controller,
             physics: const ClampingScrollPhysics(),
             children: [
+              CustomAutocomplete(
+                [
+                  'Damascus',
+                  'San Fransisco',
+                  'Rome',
+                  'Los Angeles',
+                  'Madrid',
+                  'Bali',
+                  'Barcelona',
+                  'Paris',
+                  'Bucharest',
+                  'New York City',
+                  'Philadelphia',
+                  'Sydney',
+                ],
+                (text) => print(text),
+              ),
+              SizedBox(height: 10),
               ..._generateSceneContents(_sceneContents, true),
               SizedBox(height: MediaQuery.of(context).size.height / 2),
             ],
@@ -203,11 +223,9 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     final hasChildren = children != null && children.isNotEmpty;
     return Opacity(
       opacity: isDragging ? 0.1 : 1,
-      child: CupertinoButton(
-        minSize: 0,
-        padding: EdgeInsets.zero,
-        pressedOpacity: 1,
-        onPressed: () => _setSelectedUuid(uuid),
+      child: GestureDetector(
+        onTap: () => _setSelectedUuid(uuid),
+        onDoubleTap: () => _setContentIsFolded(content, !isFolded),
         child: Container(
           decoration: BoxDecoration(
             color: isRoot ? color.withOpacity(isSelected ? 0.25 : 0.1) : null,
@@ -242,7 +260,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                     _projectProvider.swipeSceneContent(data, content);
                   },
                   builder: (context, _, __) => Row(
-                    children: [
+                    children: <Widget>[
                       if (!isPossibleHasChildren(type))
                         SizedBox(
                           width: 10,
@@ -259,23 +277,17 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                           onExit: (_) => setCursor(),
                           child: SizedBox(
                             width: 10,
-                            child: CupertinoButton(
-                              minSize: 0,
-                              padding: EdgeInsets.zero,
-                              child: Icon(
-                                isFolded
-                                    ? CupertinoIcons.chevron_right
-                                    : CupertinoIcons.chevron_down,
-                                size: 14,
+                            child: CustomIconButton(
+                              isFolded
+                                  ? CupertinoIcons.chevron_right
+                                  : CupertinoIcons.chevron_down,
+                              callback: () => _setContentIsFolded(
+                                content,
+                                !isFolded,
                               ),
-                              onPressed: () {
-                                content['isFolded'] = !isFolded;
-                                _projectProvider.setSceneContent(uuid, content);
-                              },
                             ),
                           ),
                         ),
-                      const SizedBox(width: 10),
                       SizedBox(
                         width: 160,
                         child: Text(
@@ -284,10 +296,19 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                         ),
                       ),
                       Expanded(
-                          child:
-                              Text('테스트입니다', style: TextStyle(color: color))),
+                          child: Text(
+                        '테스트입니다',
+                        style: TextStyle(color: color),
+                      )),
                       _renderUuid(uuid, color),
-                    ],
+                      Row(
+                        children: <Widget>[
+                          if (hasChildren)
+                            _renderClearButton(uuid, color, true),
+                          _renderClearButton(uuid, color),
+                        ].superJoin(const SizedBox(width: 3)).toList(),
+                      ),
+                    ].superJoin(const SizedBox(width: 10)).toList(),
                   ),
                 ),
                 if (!isFolded && isPossibleHasChildren(type))
@@ -378,6 +399,40 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
         ),
       );
 
+  Widget _renderClearButton(
+    String uuid,
+    Color color, [
+    bool isClearChildrenOnly = false,
+  ]) =>
+      Container(
+        width: 14,
+        height: 14,
+        padding: const EdgeInsets.symmetric(horizontal: 0),
+        decoration: BoxDecoration(
+          color: darkColor,
+          border: Border.all(
+            color: color,
+          ),
+        ),
+        child: CustomIconButton(
+          isClearChildrenOnly
+              ? CupertinoIcons.refresh_bold
+              : CupertinoIcons.xmark,
+          size: 10,
+          color: color,
+          callback: () async {
+            final result = await AlertManager.show(
+              isClearChildrenOnly ? '정말로 모든 자식을 비울 거니?' : '정말로 삭제할 거니?',
+              noLabel: '아니오',
+            );
+            if (result != CustomButton.positiveButton) {
+              return;
+            }
+            _projectProvider.removeSceneContent(uuid, isClearChildrenOnly);
+          },
+        ),
+      );
+
   void _animateTo([double? value]) {
     if (!controller.hasClients) {
       return;
@@ -397,6 +452,15 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
   }
 
   void _setSelectedUuid([String? uuid]) => setState(() => selectedUuid = uuid);
+
+  void _setContentIsFolded(dynamic content, bool isFolded) {
+    _setSelectedUuid(content['uuid']);
+    if (!isPossibleHasChildren(content['type'])) {
+      return;
+    }
+    content['isFolded'] = isFolded;
+    _projectProvider.setSceneContent(content);
+  }
 
   String get _sceneName => _projectState.sceneName;
 

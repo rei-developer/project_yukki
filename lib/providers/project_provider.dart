@@ -132,28 +132,21 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     return contents;
   }
 
-  void setSceneContent(String uuid, dynamic next) {
+  void setSceneContent(dynamic next) {
     List<dynamic> contents = [...state.sceneContents];
-    contents = _setSceneContents(contents, uuid, next);
+    contents = _setSceneContents(contents, next);
     changeSceneContent(contents, false);
   }
 
-  List<dynamic> _setSceneContents(
-    List<dynamic> contents,
-    String uuid,
-    dynamic next,
-  ) =>
+  List<dynamic> _setSceneContents(List<dynamic> contents, dynamic next) =>
       contents.map(
         (content) {
+          final uuid = next['uuid'];
           if (content['uuid'] == uuid) {
             content = next;
           }
           if (content['children'] != null) {
-            content['children'] = _setSceneContents(
-              content['children'],
-              uuid,
-              next,
-            );
+            content['children'] = _setSceneContents(content['children'], next);
           }
           return content;
         },
@@ -231,22 +224,32 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     setLocalScenes(scenes);
   }
 
-  void removeSceneContent(String uuid) {
+  void removeSceneContent(String uuid, [bool isClearChildrenOnly = false]) {
     List<dynamic> contents = [...state.sceneContents];
-    contents = _removeSceneContent(contents, uuid);
+    contents = _removeSceneContent(contents, uuid, isClearChildrenOnly);
     changeSceneContent(contents, false);
   }
 
-  List<dynamic> _removeSceneContent(List<dynamic> contents, String uuid) =>
+  List<dynamic> _removeSceneContent(
+    List<dynamic> contents,
+    String uuid,
+    bool isClearChildrenOnly,
+  ) =>
       contents
           .map(
             (content) {
-              if (content['uuid'] == uuid) {
+              if (content['uuid'] == uuid && !isClearChildrenOnly) {
                 return null;
               }
               if (content['children'] != null) {
-                content['children'] =
-                    _removeSceneContent(content['children'], uuid);
+                if (content['uuid'] == uuid && isClearChildrenOnly) {
+                  content['children'] = [];
+                }
+                content['children'] = _removeSceneContent(
+                  content['children'],
+                  uuid,
+                  isClearChildrenOnly,
+                );
               }
               return content;
             },
