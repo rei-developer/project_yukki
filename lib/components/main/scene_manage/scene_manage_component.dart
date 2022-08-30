@@ -26,49 +26,35 @@ class SceneManageComponent extends ConsumerStatefulWidget {
 }
 
 class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
-  final ScrollController controller = ScrollController();
+  final controller = ScrollController();
   MouseCursor cursor = SystemMouseCursors.basic;
-  String? selectedUuid;
+  dynamic selectedContent;
   bool isLocked = false;
-
-  void _toggleLock() {
-    setState(() => isLocked = !isLocked);
-  }
-
-  void _toggleFoldAll([bool isAllFolded = false]) {
-    _animateTo(0);
-    _projectProvider.setAllSceneContent('isFolded', isAllFolded);
-  }
 
   @override
   Widget build(BuildContext context) => CustomSection(
         t.headers.scene(sceneName: _sceneName),
         MouseRegion(
           cursor: cursor,
-          child: ListView(
-            controller: controller,
-            physics: const ClampingScrollPhysics(),
+          child: Stack(
             children: [
-              CustomAutocomplete(
-                [
-                  'Damascus',
-                  'San Fransisco',
-                  'Rome',
-                  'Los Angeles',
-                  'Madrid',
-                  'Bali',
-                  'Barcelona',
-                  'Paris',
-                  'Bucharest',
-                  'New York City',
-                  'Philadelphia',
-                  'Sydney',
-                ],
-                (text) => print(text),
+              Padding(
+                padding: const EdgeInsets.only(top: 34),
+                child: ListView(
+                  controller: controller,
+                  physics: const ClampingScrollPhysics(),
+                  children: [
+                    ..._generateSceneContents(_sceneContents, true),
+                    SizedBox(height: MediaQuery.of(context).size.height / 2),
+                  ],
+                ),
               ),
-              SizedBox(height: 10),
-              ..._generateSceneContents(_sceneContents, true),
-              SizedBox(height: MediaQuery.of(context).size.height / 2),
+              CustomAutocomplete(
+                _autocompletedWords,
+                _onSubmitted,
+                placeholder: '명령어를 검색하세요...',
+                searchLabel: '삽입',
+              ),
             ],
           ),
         ),
@@ -122,30 +108,6 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
         ],
       );
 
-  void _clearSceneContent(VoidCallback? pong) async {
-    if (_isLocked) {
-      return;
-    }
-    final result = await AlertManager.show('정말로 모두 삭제할 거니?', noLabel: '아니오');
-    if (result != CustomButton.positiveButton) {
-      return;
-    }
-    pong?.call();
-    _animateTo(0);
-    _projectProvider.clearSceneContent();
-  }
-
-  bool get _isLocked {
-    if (isLocked && _debuggerProvider.mounted) {
-      _debuggerProvider.addDebug('씬이 잠긴 상태입니다.', warningDebug);
-      return true;
-    }
-    return false;
-  }
-
-  void setCursor([MouseCursor nextCursor = SystemMouseCursors.basic]) =>
-      setState(() => cursor = nextCursor);
-
   List<Widget> _generateSceneContents(
     List<dynamic> contents, [
     bool isRoot = false,
@@ -157,8 +119,8 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                 feedback: _renderSceneContentFeedback(e),
                 data: e,
                 childWhenDragging: _renderSceneContent(e, isRoot, !isLocked),
-                onDragStarted: () => setCursor(SystemMouseCursors.grabbing),
-                onDragEnd: (_) => setCursor(),
+                onDragStarted: () => _setCursor(SystemMouseCursors.grabbing),
+                onDragEnd: (_) => _setCursor(),
                 child: _renderSceneContent(e, isRoot),
               ),
             )
@@ -199,7 +161,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                   style: primaryTextStyle.copyWith(color: color),
                 ),
                 const SizedBox(width: 5),
-                _renderUuid(content['uuid'], color),
+                _renderUUID(content['uuid'], color),
               ],
             ),
           ],
@@ -218,13 +180,13 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     final type = content['type'];
     final color = getCommandColor(type);
     final children = content['children'] as List<dynamic>?;
-    final isSelected = selectedUuid == uuid;
+    final isSelected = uuid == _selectedUUID;
     final isFolded = content['isFolded'] ?? false;
     final hasChildren = children != null && children.isNotEmpty;
     return Opacity(
       opacity: isDragging ? 0.1 : 1,
       child: GestureDetector(
-        onTap: () => _setSelectedUuid(uuid),
+        onTap: () => _setSelectedContent(content),
         onDoubleTap: () => _setContentIsFolded(content, !isFolded),
         child: Container(
           decoration: BoxDecoration(
@@ -256,7 +218,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                         return;
                       }
                     }
-                    _setSelectedUuid();
+                    _setSelectedContent();
                     _projectProvider.swipeSceneContent(data, content);
                   },
                   builder: (context, _, __) => Row(
@@ -273,8 +235,8 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                       else
                         MouseRegion(
                           cursor: cursor,
-                          onHover: (_) => setCursor(SystemMouseCursors.click),
-                          onExit: (_) => setCursor(),
+                          onHover: (_) => _setCursor(SystemMouseCursors.click),
+                          onExit: (_) => _setCursor(),
                           child: SizedBox(
                             width: 10,
                             child: CustomIconButton(
@@ -300,7 +262,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                         '테스트입니다',
                         style: TextStyle(color: color),
                       )),
-                      _renderUuid(uuid, color),
+                      _renderUUID(uuid, color),
                       Row(
                         children: <Widget>[
                           if (hasChildren)
@@ -346,13 +308,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     bool isRoot = false,
   ]) =>
       DragTarget(
-        onAccept: (dynamic data) {
-          if (isLocked) {
-            return;
-          }
-          _projectProvider.addSceneContent(data, content, isRoot);
-          _projectProvider.removeSceneContent(data['uuid']);
-        },
+        onAccept: (dynamic data) => _addSceneContent(data, content, isRoot),
         builder: (context, _, __) => Padding(
           padding: EdgeInsets.only(top: isRoot ? 0 : 10),
           child: Container(
@@ -379,7 +335,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                           : primaryTextStyle,
                     ),
                   ),
-                  _renderUuid(isRoot ? 'root' : content['uuid']),
+                  _renderUUID(isRoot ? 'root' : content['uuid']),
                 ],
               ),
             ),
@@ -387,7 +343,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
         ),
       );
 
-  Widget _renderUuid(String uuid, [Color color = primaryColor]) => Container(
+  Widget _renderUUID(String uuid, [Color color = primaryColor]) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: color,
@@ -451,10 +407,26 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     _animateTo(controller.position.pixels + value);
   }
 
-  void _setSelectedUuid([String? uuid]) => setState(() => selectedUuid = uuid);
+  void _addSceneContent(data, content, isRoot, [bool isRemove = true]) {
+    if (isLocked) {
+      return;
+    }
+    _projectProvider.addSceneContent(data, content, isRoot);
+    final uuid = data['uuid'];
+    if (uuid == null || !isRemove) {
+      return;
+    }
+    _projectProvider.removeSceneContent(uuid);
+  }
+
+  void _setCursor([MouseCursor nextCursor = SystemMouseCursors.basic]) =>
+      setState(() => cursor = nextCursor);
+
+  void _setSelectedContent([dynamic content]) =>
+      setState(() => selectedContent = content);
 
   void _setContentIsFolded(dynamic content, bool isFolded) {
-    _setSelectedUuid(content['uuid']);
+    _setSelectedContent(content);
     if (!isPossibleHasChildren(content['type'])) {
       return;
     }
@@ -462,9 +434,57 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     _projectProvider.setSceneContent(content);
   }
 
+  void _toggleLock() => setState(() => isLocked = !isLocked);
+
+  void _toggleFoldAll([bool isAllFolded = false]) {
+    _animateTo(0);
+    _projectProvider.setAllSceneContent('isFolded', isAllFolded);
+  }
+
+  void _clearSceneContent(VoidCallback? pong) async {
+    if (_isLocked) {
+      return;
+    }
+    final result = await AlertManager.show('정말로 모두 삭제할 거니?', noLabel: '아니오');
+    if (result != CustomButton.positiveButton) {
+      return;
+    }
+    pong?.call();
+    _animateTo(0);
+    _projectProvider.clearSceneContent();
+  }
+
+  void _onSubmitted(String text) {
+    final findIndex = commandItems.indexWhere((e) => e['localized'] == text);
+    if (findIndex < 0) {
+      return;
+    }
+    final isRoot = selectedContent == null;
+    _addSceneContent(
+      commandItems[findIndex],
+      isRoot ? _sceneContents : selectedContent,
+      isRoot,
+      false,
+    );
+  }
+
   String get _sceneName => _projectState.sceneName;
 
   List<dynamic> get _sceneContents => _projectState.sceneContents ?? [];
+
+  String get _selectedUUID =>
+      selectedContent == null ? '' : selectedContent['uuid'];
+
+  List<String> get _autocompletedWords =>
+      commandItems.map((e) => e['localized'] as String).toList();
+
+  bool get _isLocked {
+    if (isLocked && _debuggerProvider.mounted) {
+      _debuggerProvider.addDebug('씬이 잠긴 상태입니다.', warningDebug);
+      return true;
+    }
+    return false;
+  }
 
   DebuggerProvider get _debuggerProvider => ref.read(debuggerProvider.notifier);
 

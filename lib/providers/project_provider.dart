@@ -105,7 +105,13 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
   ) =>
       contents.map(
         (content) {
-          if (content['children'] != null) {
+          if (content['children'] == null) {
+            if (content['uuid'] == next['uuid']) {
+              final temp = content['uuid'];
+              content = prev;
+              content['uuid'] = temp;
+            }
+          } else {
             if (content['uuid'] == next['uuid']) {
               content['children'] = _addSceneContentNewItem(
                 content['children'],

@@ -1,68 +1,175 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:mana_studio/config/ui_config.dart';
 
 class CustomAutocomplete extends StatefulWidget {
-  const CustomAutocomplete(this.words, this.onSubmitted, {Key? key})
-      : super(key: key);
+  const CustomAutocomplete(
+    this.words,
+    this.onSubmitted, {
+    this.placeholder,
+    this.searchIcon = CupertinoIcons.add,
+    this.searchLabel = 'Search',
+    Key? key,
+  }) : super(key: key);
 
   final List<String> words;
   final Function(String text) onSubmitted;
+  final String? placeholder;
+  final IconData searchIcon;
+  final String searchLabel;
 
   @override
   State<CustomAutocomplete> createState() => _CustomAutocompleteState();
 }
 
 class _CustomAutocompleteState extends State<CustomAutocomplete> {
-  FocusNode? focusNode;
-  final typeAheadController = TextEditingController();
+  final focusNode = FocusNode();
+  final controller = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    focusNode = FocusNode();
-  }
+  static const upKey = 'Arrow Up';
+  static const downKey = 'Arrow Down';
 
   @override
   void dispose() {
-    focusNode?.dispose();
+    focusNode.dispose();
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => SizedBox(
+        width: 260,
         height: 24,
-        child: CupertinoTypeAheadFormField(
-          textFieldConfiguration: CupertinoTextFieldConfiguration(
-            focusNode: focusNode,
-            controller: typeAheadController,
-            decoration: const BoxDecoration(color: darkColor),
-            placeholder: '검색어를 입력하세요...',
-            autofocus: true,
-            onSubmitted: _onSubmitted,
-          ),
-          suggestionsCallback: _onSuggestions,
-          suggestionsBoxDecoration: CupertinoSuggestionsBoxDecoration(
-            border: Border.all(color: primaryColor),
-          ),
-          itemBuilder: (context, String suggestion) => Container(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-            decoration: const BoxDecoration(color: darkColor),
-            child: Text(suggestion),
-          ),
-          noItemsFoundBuilder: (_) => Container(),
-          suggestionsBoxVerticalOffset: 10,
-          debounceDuration: Duration.zero,
-          animationDuration: Duration.zero,
-          getImmediateSuggestions: true,
-          hideOnLoading: true,
-          keepSuggestionsOnLoading: true,
-          onSuggestionSelected: _onSubmitted,
+        child: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            SizedBox(
+              width: 200,
+              height: 24,
+              child: RawKeyboardListener(
+                focusNode: FocusNode(),
+                onKey: _onKey,
+                child: CupertinoTypeAheadFormField(
+                  textFieldConfiguration: CupertinoTextFieldConfiguration(
+                    focusNode: focusNode,
+                    controller: controller,
+                    decoration: const BoxDecoration(color: darkColor),
+                    placeholder: widget.placeholder,
+                    autofocus: true,
+                    onSubmitted: _onSubmitted,
+                  ),
+                  suggestionsCallback: _onSuggestions,
+                  suggestionsBoxDecoration: CupertinoSuggestionsBoxDecoration(
+                    border: Border.all(color: primaryColor),
+                  ),
+                  itemBuilder: (context, text) => Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: controller.text == text ? primaryColor : darkColor,
+                    ),
+                    child: Text(
+                      '$text',
+                      style: controller.text == text
+                          ? darkTextBoldStyle
+                          : primaryTextStyle,
+                    ),
+                  ),
+                  noItemsFoundBuilder: (_) => Container(),
+                  suggestionsBoxVerticalOffset: 10,
+                  debounceDuration: Duration.zero,
+                  animationDuration: Duration.zero,
+                  getImmediateSuggestions: true,
+                  hideOnLoading: true,
+                  keepSuggestionsOnLoading: true,
+                  onSuggestionSelected: _onSubmitted,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 24,
+              child: CupertinoButton(
+                minSize: 0,
+                padding: EdgeInsets.zero,
+                child: Container(
+                  width: 50,
+                  height: 18,
+                  decoration: const BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.all(Radius.circular(2)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          widget.searchIcon,
+                          size: 12,
+                          color: darkColor,
+                        ),
+                        Text(widget.searchLabel, style: darkTextBoldStyle),
+                      ],
+                    ),
+                  ),
+                ),
+                onPressed: () => _onSubmitted(),
+              ),
+            ),
+          ],
         ),
       );
 
-  void _onSubmitted(String text) {
-    typeAheadController.clear();
+  void _onKey(event) {
+    final keyEvent = event.runtimeType;
+    final key = event.data.logicalKey.keyLabel;
+    if (!(keyEvent == RawKeyDownEvent && (key == upKey || key == downKey))) {
+      return;
+    }
+    final text = controller.text;
+    final matches = _onSuggestions(text);
+    if (matches.isEmpty) {
+      return;
+    }
+    if (key == upKey) {
+      _setText(matches.last);
+    } else if (key == downKey) {
+      if (!matches.contains(text)) {
+        _setText(matches.first);
+        return;
+      }
+      final findIndex = matches.indexWhere((e) => e == text);
+      final nextIndex = findIndex + 1;
+      if (findIndex < 0 || nextIndex >= matches.length) {
+        return;
+      }
+      _setText(matches[nextIndex]);
+    }
+  }
+
+  void _setText(text) {
+    controller.text = text;
+    Future.delayed(
+      Duration.zero,
+      () => controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: text.length),
+      ),
+    );
+  }
+
+  void _onSubmitted([String? text]) {
+    text ??= controller.text;
+    if (text == '') {
+      return;
+    }
+    controller.clear();
+    final matches = _onSuggestions(text);
+    if (matches.isNotEmpty && !matches.contains(text)) {
+      text = matches.first;
+    }
     widget.onSubmitted.call(text);
     Future.delayed(
       Duration.zero,
@@ -70,13 +177,13 @@ class _CustomAutocompleteState extends State<CustomAutocomplete> {
     );
   }
 
-  List<String> _onSuggestions(String query) {
-    if (widget.words.isEmpty || query.isEmpty) {
+  List<String> _onSuggestions(text) {
+    if (widget.words.isEmpty || text.isEmpty) {
       return [];
     }
-    List<String> matches = [];
+    final matches = <String>[];
     matches.addAll(widget.words);
-    matches.retainWhere((s) => s.toLowerCase().contains(query.toLowerCase()));
+    matches.retainWhere((s) => s.toLowerCase().contains(text.toLowerCase()));
     return matches;
   }
 }

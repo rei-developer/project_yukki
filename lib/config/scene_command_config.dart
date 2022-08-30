@@ -1,6 +1,7 @@
 // Types
 import 'package:flutter/cupertino.dart';
 import 'package:mana_studio/config/ui_config.dart';
+import 'package:mana_studio/i18n/strings.g.dart';
 
 // ------------------------------------------------------------
 // Type
@@ -41,6 +42,25 @@ Color getCommandColor(String type) {
   }
   return commandColors[findIndex]['color'];
 }
+
+List<dynamic> commandItems = commands.entries
+    .map(
+      (e) => {
+        "commands": ((e.value['commands'] as Map<String, dynamic>)
+                .entries
+                .map((c) => c.value.map((i) => i))
+                .toList())
+            .expand((c) => c)
+            .toList()
+      },
+    )
+    .expand((dynamic e) => e['commands'])
+    .map(
+  (e) {
+    e['localized'] = t['scene.command.${e["type"]}.label'];
+    return e;
+  },
+).toList();
 
 List<Map<String, dynamic>> commandColors = commands.entries
     .map(
