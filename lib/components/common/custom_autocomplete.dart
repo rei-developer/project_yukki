@@ -40,7 +40,7 @@ class _CustomAutocompleteState extends State<CustomAutocomplete> {
   @override
   Widget build(BuildContext context) => SizedBox(
         width: 260,
-        height: 24,
+        height: 25,
         child: Wrap(
           alignment: WrapAlignment.spaceBetween,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -89,7 +89,7 @@ class _CustomAutocompleteState extends State<CustomAutocomplete> {
               ),
             ),
             SizedBox(
-              height: 24,
+              height: 25,
               child: CupertinoButton(
                 minSize: 0,
                 padding: EdgeInsets.zero,

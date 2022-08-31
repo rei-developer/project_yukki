@@ -49,11 +49,17 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                   ],
                 ),
               ),
-              CustomAutocomplete(
-                _autocompletedWords,
-                _onSubmitted,
-                placeholder: '명령어를 검색하세요...',
-                searchLabel: '삽입',
+              Row(
+                children: [
+                  CustomAutocomplete(
+                    _autocompletedWords,
+                    _addSceneCommand,
+                    placeholder: '명령어를 검색하세요...',
+                    searchLabel: '삽입',
+                  ),
+                  const SizedBox(width: 10),
+                  _renderSelectedCommandItems,
+                ],
               ),
             ],
           ),
@@ -79,7 +85,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
           CustomSectionHeaderButton(
             icon: CupertinoIcons.arrow_up,
             tooltip: t.common.up,
-            callback: (_) => _upperScrollTo(-100),
+            callback: (_) => _upperScrollTo(-(_scrollHeight / 4)),
           ),
           CustomSectionHeaderButton(
             icon: CupertinoIcons.arrow_up_to_line,
@@ -89,7 +95,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
           CustomSectionHeaderButton(
             icon: CupertinoIcons.arrow_down,
             tooltip: t.common.down,
-            callback: (_) => _upperScrollTo(100),
+            callback: (_) => _upperScrollTo(_scrollHeight / 4),
           ),
           CustomSectionHeaderButton(
             icon: CupertinoIcons.arrow_down_to_line,
@@ -394,7 +400,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
       return;
     }
     controller.animateTo(
-      value ?? (controller.position.maxScrollExtent + 100),
+      value ?? (_scrollHeight + 100),
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
@@ -454,19 +460,62 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     _projectProvider.clearSceneContent();
   }
 
-  void _onSubmitted(String text) {
+  void _addSceneCommand(String text, [bool isSaveSearchedCommand = true]) {
     final findIndex = commandItems.indexWhere((e) => e['localized'] == text);
     if (findIndex < 0) {
       return;
     }
+    final item = commandItems[findIndex];
+    if (isSaveSearchedCommand) {
+      _projectProvider.addSearchedSceneCommand(item);
+    }
     final isRoot = selectedContent == null;
     _addSceneContent(
-      commandItems[findIndex],
+      item,
       isRoot ? _sceneContents : selectedContent,
       isRoot,
       false,
     );
   }
+
+  Widget get _renderSelectedCommandItems => Expanded(
+        child: SizedBox(
+          height: 25,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: <Widget>[
+              ..._projectState.searchedSceneCommands
+                  .map(
+                    (dynamic command) {
+                      final color = getCommandColor(command['type']);
+                      final localized = command['localized'];
+                      return CupertinoButton(
+                        minSize: 0,
+                        padding: EdgeInsets.zero,
+                        child: Container(
+                          decoration:
+                              BoxDecoration(color: color.withOpacity(0.2)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            child: Text(
+                              localized,
+                              style: primaryTextStyle.copyWith(color: color),
+                            ),
+                          ),
+                        ),
+                        onPressed: () => _addSceneCommand(localized, false),
+                      );
+                    },
+                  )
+                  .toList()
+                  .reversed,
+            ].superJoin(const SizedBox(width: 10)).toList(),
+          ),
+        ),
+      );
 
   String get _sceneName => _projectState.sceneName;
 
@@ -477,6 +526,8 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
 
   List<String> get _autocompletedWords =>
       commandItems.map((e) => e['localized'] as String).toList();
+
+  double get _scrollHeight => controller.position.maxScrollExtent;
 
   bool get _isLocked {
     if (isLocked && _debuggerProvider.mounted) {

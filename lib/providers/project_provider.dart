@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mana_studio/config/asset_config.dart';
 import 'package:mana_studio/config/debugger_config.dart';
 import 'package:mana_studio/config/project_config.dart';
+import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/storage_config.dart';
 import 'package:mana_studio/models/project_model.dart';
 import 'package:mana_studio/models/scenes/scene_content_model.dart';
@@ -136,6 +137,19 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     item['uuid'] = const Uuid().v4();
     contents = [...contents, item];
     return contents;
+  }
+
+  void addSearchedSceneCommand(dynamic command) {
+    List<dynamic> commands = [...state.searchedSceneCommands];
+    final findIndex = commands.indexWhere((e) => e['type'] == command['type']);
+    if (findIndex >= 0) {
+      commands.removeAt(findIndex);
+    }
+    commands.add(command);
+    if (commands.length > 10) {
+      commands.removeAt(0);
+    }
+    state = state.copyWith(searchedSceneCommands: commands);
   }
 
   void setSceneContent(dynamic next) {

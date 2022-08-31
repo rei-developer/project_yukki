@@ -8,28 +8,33 @@ class ProjectModel {
   ProjectModel(
     this.sceneName,
     this.scenes,
+    this.searchedSceneCommands,
     this.scripts,
   );
 
   factory ProjectModel.initial({
     String? sceneName,
     ScenesModel? scenes,
+    List<dynamic>? searchedSceneCommands,
     ScriptsModel? scripts,
   }) =>
       ProjectModel(
         sceneName ?? firstSceneName,
         scenes ?? ScenesModel.initial(),
+        searchedSceneCommands ?? [],
         scripts ?? ScriptsModel.initial(),
       );
 
   ProjectModel copyWith({
     String? sceneName,
     ScenesModel? scenes,
+    List<dynamic>? searchedSceneCommands,
     ScriptsModel? scripts,
   }) =>
       ProjectModel(
         sceneName ?? this.sceneName,
         scenes ?? this.scenes,
+        searchedSceneCommands ?? this.searchedSceneCommands,
         scripts ?? this.scripts,
       );
 
@@ -83,5 +88,6 @@ class ProjectModel {
 
   final String sceneName;
   final ScenesModel scenes;
+  final List<dynamic> searchedSceneCommands;
   final ScriptsModel scripts;
 }
