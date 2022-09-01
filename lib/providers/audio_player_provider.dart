@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mana_studio/config/storage_config.dart';
 import 'package:mana_studio/models/audio_player_model.dart';
-import 'package:mana_studio/utils/managers/storage_manager.dart';
+import 'package:mana_studio/managers/storage_manager.dart';
 
 class AudioPlayerProvider extends StateNotifier<AudioPlayerModel> {
   AudioPlayerProvider(this.ref) : super(AudioPlayerModel.initial());

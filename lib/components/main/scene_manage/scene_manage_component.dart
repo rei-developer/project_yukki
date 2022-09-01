@@ -6,6 +6,7 @@ import 'package:mana_studio/components/common/custom_divider.dart';
 import 'package:mana_studio/components/common/custom_icon_button.dart';
 import 'package:mana_studio/components/common/custom_section.dart';
 import 'package:mana_studio/components/common/custom_section_header_button.dart';
+import 'package:mana_studio/managers/scene_command_context_manager.dart';
 import 'package:mana_studio/config/debugger_config.dart';
 import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/ui_config.dart';
@@ -14,7 +15,7 @@ import 'package:mana_studio/models/project_model.dart';
 import 'package:mana_studio/providers/debugger_provider.dart';
 import 'package:mana_studio/providers/project_provider.dart';
 import 'package:mana_studio/utils/func.dart';
-import 'package:mana_studio/utils/managers/alert_manager.dart';
+import 'package:mana_studio/managers/alert_manager.dart';
 import 'package:mana_studio/utils/masker.dart';
 
 class SceneManageComponent extends ConsumerStatefulWidget {
@@ -185,6 +186,17 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     final uuid = content['uuid'];
     final type = content['type'];
     final color = getCommandColor(type);
+    final render = SceneCommandContextManager(
+      content,
+      color,
+      () {
+        if (_selectedUUID == uuid) {
+          return;
+        }
+        _setSelectedContent(content);
+      },
+      (next) => _projectProvider.setSceneContent(next),
+    ).render;
     final children = content['children'] as List<dynamic>?;
     final isSelected = uuid == _selectedUUID;
     final isFolded = content['isFolded'] ?? false;
@@ -227,56 +239,65 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                     _setSelectedContent();
                     _projectProvider.swipeSceneContent(data, content);
                   },
-                  builder: (context, _, __) => Row(
+                  builder: (context, _, __) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      if (!isPossibleHasChildren(type))
-                        SizedBox(
-                          width: 10,
-                          child: Icon(
-                            CupertinoIcons.circle_fill,
-                            size: 6,
-                            color: color,
-                          ),
-                        )
-                      else
-                        MouseRegion(
-                          cursor: cursor,
-                          onHover: (_) => _setCursor(SystemMouseCursors.click),
-                          onExit: (_) => _setCursor(),
-                          child: SizedBox(
-                            width: 10,
-                            child: CustomIconButton(
-                              isFolded
-                                  ? CupertinoIcons.chevron_right
-                                  : CupertinoIcons.chevron_down,
-                              callback: () => _setContentIsFolded(
-                                content,
-                                !isFolded,
-                              ),
-                            ),
-                          ),
-                        ),
-                      SizedBox(
-                        width: 160,
-                        child: Text(
-                          label,
-                          style: primaryTextBoldStyle.copyWith(color: color),
-                        ),
-                      ),
-                      Expanded(
-                          child: Text(
-                        '테스트입니다',
-                        style: TextStyle(color: color),
-                      )),
-                      _renderUUID(uuid, color),
                       Row(
                         children: <Widget>[
-                          if (hasChildren)
-                            _renderClearButton(uuid, color, true),
-                          _renderClearButton(uuid, color),
-                        ].superJoin(const SizedBox(width: 3)).toList(),
+                          if (!isPossibleHasChildren(type) && render == null)
+                            SizedBox(
+                              width: 10,
+                              child: Icon(
+                                CupertinoIcons.circle_fill,
+                                size: 6,
+                                color: color,
+                              ),
+                            )
+                          else
+                            MouseRegion(
+                              cursor: cursor,
+                              onHover: (_) =>
+                                  _setCursor(SystemMouseCursors.click),
+                              onExit: (_) => _setCursor(),
+                              child: SizedBox(
+                                width: 10,
+                                child: CustomIconButton(
+                                  isFolded
+                                      ? CupertinoIcons.chevron_right
+                                      : CupertinoIcons.chevron_down,
+                                  color: color,
+                                  callback: () => _setContentIsFolded(
+                                    content,
+                                    !isFolded,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          SizedBox(
+                            width: 160,
+                            child: Text(
+                              label,
+                              style:
+                                  primaryTextBoldStyle.copyWith(color: color),
+                            ),
+                          ),
+                          Expanded(
+                              child: Text(
+                            '$isFolded',
+                            style: TextStyle(color: color),
+                          )),
+                          _renderUUID(uuid, color),
+                          Row(
+                            children: <Widget>[
+                              if (hasChildren)
+                                _renderClearButton(uuid, color, true),
+                              _renderClearButton(uuid, color),
+                            ].superJoin(const SizedBox(width: 3)).toList(),
+                          ),
+                        ].superJoin(const SizedBox(width: 10)).toList(),
                       ),
-                    ].superJoin(const SizedBox(width: 10)).toList(),
+                      if (render != null && !isFolded) render,
+                    ].superJoin(const SizedBox(height: 10)).toList(),
                   ),
                 ),
                 if (!isFolded && isPossibleHasChildren(type))
@@ -433,9 +454,6 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
 
   void _setContentIsFolded(dynamic content, bool isFolded) {
     _setSelectedContent(content);
-    if (!isPossibleHasChildren(content['type'])) {
-      return;
-    }
     content['isFolded'] = isFolded;
     _projectProvider.setSceneContent(content);
   }

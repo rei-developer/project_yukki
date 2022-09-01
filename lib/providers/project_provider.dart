@@ -17,7 +17,7 @@ import 'package:mana_studio/providers/debugger_provider.dart';
 import 'package:mana_studio/providers/game_provider.dart';
 import 'package:mana_studio/utils/loaders/scene_loader.dart';
 import 'package:mana_studio/utils/loaders/script_loader.dart';
-import 'package:mana_studio/utils/managers/storage_manager.dart';
+import 'package:mana_studio/managers/storage_manager.dart';
 import 'package:mana_studio/utils/script_runner.dart';
 import 'package:uuid/uuid.dart';
 

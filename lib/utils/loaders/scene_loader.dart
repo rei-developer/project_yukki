@@ -2,8 +2,8 @@ import 'package:mana_studio/config/asset_config.dart';
 import 'package:mana_studio/config/storage_config.dart';
 import 'package:mana_studio/models/scenes/scene_model.dart';
 import 'package:mana_studio/models/scenes/scenes_model.dart';
-import 'package:mana_studio/utils/managers/asset_manager.dart';
-import 'package:mana_studio/utils/managers/storage_manager.dart';
+import 'package:mana_studio/managers/asset_manager.dart';
+import 'package:mana_studio/managers/storage_manager.dart';
 
 class SceneLoader {
   Future<ScenesModel> load() async {

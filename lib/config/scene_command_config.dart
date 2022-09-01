@@ -126,7 +126,7 @@ Map<String, dynamic> commands = {
         },
         {
           "type": commentCommand,
-          "data": "",
+          "data": {"description": ""},
         },
       ],
     },
