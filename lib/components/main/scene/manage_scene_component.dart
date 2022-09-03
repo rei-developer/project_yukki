@@ -6,6 +6,7 @@ import 'package:mana_studio/components/common/custom_divider.dart';
 import 'package:mana_studio/components/common/custom_icon_button.dart';
 import 'package:mana_studio/components/common/section.dart';
 import 'package:mana_studio/components/common/section_header_button.dart';
+import 'package:mana_studio/managers/scene/scene_command_header_package_manager.dart';
 import 'package:mana_studio/managers/scene/scene_command_package_manager.dart';
 import 'package:mana_studio/config/debugger_config.dart';
 import 'package:mana_studio/config/scene_command_config.dart';
@@ -46,7 +47,9 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
                   controller: controller,
                   physics: const ClampingScrollPhysics(),
                   children: [
-                    ..._generateSceneContents(_sceneContents, true),
+                    ..._generateSceneContents(_sceneContents),
+                    if (!isLocked) CustomDivider(color: darkColor.withOpacity(0.2)),
+                    if (!isLocked) _renderAdditionalArea(_sceneContents, true),
                     SizedBox(height: MediaQuery.of(context).size.height / 2),
                   ],
                 ),
@@ -113,12 +116,12 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
         ],
       );
 
-  List<Widget> _generateSceneContents(List<dynamic> contents, [bool isRoot = false]) => [
-        ...contents.map((content) => _renderSceneContent(content, isRoot)).toList(),
-        if (!isLocked && isRoot) _renderAdditionalArea(contents, isRoot),
-      ].superJoin(CustomDivider(color: (isRoot ? darkColor : pitchBlackColor).withOpacity(0.2))).toList();
+  List<Widget> _generateSceneContents(List<dynamic> contents, [int depth = 0]) => contents
+      .map((content) => _renderSceneContent(content, depth))
+      .superJoin(CustomDivider(color: (depth == 0 ? darkColor : pitchBlackColor).withOpacity(0.2)))
+      .toList();
 
-  Widget _renderSceneContentFeedback(dynamic content) {
+  Widget _renderSceneContentFeedback(dynamic content, int depth) {
     if (isLocked) {
       return Container();
     }
@@ -135,13 +138,17 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
           children: [
             Row(
               children: [
+                _renderDepth(depth, color),
                 Text(
                   childrenLength > 0 ? '$typeName 및 $childrenLength개의 ${t.scene.children}...' : typeName,
-                  style: primaryTextStyle.copyWith(color: color),
+                  style: primaryTextBoldStyle.copyWith(color: color),
                 ),
-                const SizedBox(width: 5),
                 _renderUUID(content['uuid'], color),
-              ],
+                Text(
+                  '명령어 다른 곳에 배치...',
+                  style: primaryTextStyle.copyWith(color: color),
+                )
+              ].superJoin(const SizedBox(width: 10)).toList(),
             ),
           ],
         ),
@@ -149,12 +156,19 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
     );
   }
 
-  Widget _renderSceneContent(dynamic content, [bool isRoot = false]) {
+  Widget _renderSceneContent(dynamic content, [int depth = 0]) {
     final label = t['scene.command.${content['type']}.label'];
     final uuid = content['uuid'];
     final type = content['type'];
     final color = getCommandColor(type);
-    final render = SceneCommandPackageManager(
+    final renderHeader = SceneCommandHeaderPackageManager(
+      SceneCommandPackageModel(
+        content,
+        color,
+        (next) => _projectProvider.setSceneContent(next),
+      ),
+    ).render;
+    final renderBody = SceneCommandPackageManager(
       SceneCommandPackageModel(
         content,
         color,
@@ -162,6 +176,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
       ),
     ).render;
     final children = content['children'] as List<dynamic>?;
+    final isRoot = depth == 0;
     final isSelected = uuid == _selectedUUID;
     final isFolded = content['isFolded'] ?? false;
     final hasChildren = children != null && children.isNotEmpty;
@@ -198,7 +213,6 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       Draggable(
-                        axis: Axis.vertical,
                         data: content,
                         onDragStarted: () {
                           _setCursor(SystemMouseCursors.grabbing);
@@ -209,13 +223,13 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
                           _setCursor();
                           _setIsDragging();
                         },
-                        feedback: _renderSceneContentFeedback(content),
+                        feedback: _renderSceneContentFeedback(content, depth),
                         childWhenDragging: Container(height: 14),
                         child: GestureDetector(
                           onDoubleTap: () => _setContentIsFolded(content, !isFolded),
                           child: Row(
                             children: <Widget>[
-                              if (!isPossibleHasChildren(type) && render == null)
+                              if (!isPossibleHasChildren(type) && renderBody == null)
                                 SizedBox(width: 10, child: Icon(CupertinoIcons.circle_fill, size: 6, color: color))
                               else
                                 MouseRegion(
@@ -231,11 +245,12 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
                                     ),
                                   ),
                                 ),
+                              _renderDepth(depth, color),
                               SizedBox(
                                 width: 160,
                                 child: Text(label, style: primaryTextBoldStyle.copyWith(color: color)),
                               ),
-                              Expanded(child: Text('$isFolded', style: TextStyle(color: color))),
+                              Expanded(child: renderHeader ?? Container()),
                               _renderUUID(uuid, color),
                               Row(
                                 children: <Widget>[
@@ -247,7 +262,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
                           ),
                         ),
                       ),
-                      if (render != null && !isFolded) render,
+                      if (renderBody != null && !isFolded) renderBody,
                     ].superJoin(const SizedBox(height: 10)).toList(),
                   ),
                 ),
@@ -261,7 +276,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
                             decoration: BoxDecoration(color: darkColor, border: Border.all(color: primaryLightColor)),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: _generateSceneContents(children),
+                              children: _generateSceneContents(children, depth + 1),
                             ),
                           ),
                         ),
@@ -276,7 +291,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
     );
   }
 
-  Widget _renderAdditionalArea([dynamic content, bool isRoot = false]) => DragTarget(
+  Widget _renderAdditionalArea(dynamic content, [bool isRoot = false]) => DragTarget(
         onAccept: (dynamic data) => _addSceneContent(data, content, isRoot),
         builder: (context, _, __) => Padding(
           padding: EdgeInsets.only(top: isRoot ? 0 : 10),
@@ -304,10 +319,14 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
         ),
       );
 
-  Widget _renderUUID(String uuid, [Color color = primaryColor]) => Container(
+  Widget _renderDepth(int depth, [Color color = primaryColor]) => _renderLabel('$depth Depth', color);
+
+  Widget _renderUUID(String uuid, [Color color = primaryColor]) => _renderLabel(Masker(uuid).mask, color);
+
+  Widget _renderLabel(String text, [Color color = primaryColor]) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(color: color, borderRadius: const BorderRadius.all(Radius.circular(2))),
-        child: Text(Masker(uuid).mask, style: darkTextBoldStyle.copyWith(fontSize: 11)),
+        child: Text(text, style: darkTextBoldStyle.copyWith(fontSize: 11)),
       );
 
   Widget _renderClearButton(String uuid, Color color, [bool isClearChildrenOnly = false]) => Container(
