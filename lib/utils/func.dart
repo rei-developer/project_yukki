@@ -10,13 +10,6 @@ Iterable<E> mapIndexed<E, T>(
 }
 
 extension CustomIterable<T> on Iterable<T> {
-  T? get firstOrNull => isEmpty ? null : first;
-
-  T? firstWhereOrNull(bool Function(T element) test) {
-    final list = where(test);
-    return list.isEmpty ? null : list.first;
-  }
-
   Iterable<T> superJoin(T separator) {
     final iterator = this.iterator;
     if (!iterator.moveNext()) return [];
@@ -28,4 +21,11 @@ extension CustomIterable<T> on Iterable<T> {
     }
     return list;
   }
+
+  T? firstWhereOrNull(bool Function(T element) test) {
+    final list = where(test);
+    return list.isEmpty ? null : list.first;
+  }
+
+  T? get firstOrNull => isEmpty ? null : first;
 }

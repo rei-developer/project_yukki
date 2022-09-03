@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/utils/func.dart';
 
-class CustomSection extends StatefulWidget {
-  const CustomSection(
+class Section extends StatefulWidget {
+  const Section(
     this.label,
     this.body, {
     this.icon,
@@ -21,10 +21,10 @@ class CustomSection extends StatefulWidget {
   final double? height;
 
   @override
-  State<CustomSection> createState() => _CustomSectionState();
+  State<Section> createState() => _SectionState();
 }
 
-class _CustomSectionState extends State<CustomSection> {
+class _SectionState extends State<Section> {
   @override
   Widget build(BuildContext context) => SizedBox(
         width: widget.width,
@@ -35,26 +35,17 @@ class _CustomSectionState extends State<CustomSection> {
             Container(
               decoration: BoxDecoration(
                 color: primaryColor.withOpacity(0.8),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  topRight: Radius.circular(5),
-                ),
+                borderRadius: const BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Row(
                   children: [
-                    if (widget.icon != null)
-                      Icon(widget.icon, size: 13, color: darkColor),
+                    if (widget.icon != null) Icon(widget.icon, size: 13, color: darkColor),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(5),
-                        child: Text(
-                          widget.label,
-                          style: darkTextBoldStyle,
-                        ),
+                        child: Text(widget.label, style: darkTextBoldStyle),
                       ),
                     ),
                     if (widget.headerButtons != null)

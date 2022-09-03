@@ -1,7 +1,7 @@
 import 'package:mana_studio/config/project_config.dart';
-import 'package:mana_studio/models/scenes/scene_content_model.dart';
-import 'package:mana_studio/models/scenes/scenes_model.dart';
-import 'package:mana_studio/models/scripts_model.dart';
+import 'package:mana_studio/models/scene/scene_content_model.dart';
+import 'package:mana_studio/models/scene/scenes_model.dart';
+import 'package:mana_studio/models/script/scripts_model.dart';
 import 'package:mana_studio/utils/func.dart';
 
 class ProjectModel {
@@ -50,8 +50,7 @@ class ProjectModel {
     return jsonData;
   }
 
-  List<SceneContentModel> get sceneContentsWithChildren =>
-      _addAllChildren(_mapSceneContents(sceneContents));
+  List<SceneContentModel> get sceneContentsWithChildren => _addAllChildren(_mapSceneContents(sceneContents));
 
   List<SceneContentModel> _addAllChildren(List<SceneContentModel> children) {
     List<SceneContentModel> result = [];
@@ -76,8 +75,7 @@ class ProjectModel {
         ),
       ).toList();
 
-  SceneContentModel _generateSceneContent(dynamic data, List<int> indexes) =>
-      SceneContentModel.initial(
+  SceneContentModel _generateSceneContent(dynamic data, List<int> indexes) => SceneContentModel.initial(
         data['uuid'],
         indexes,
         data['type'],

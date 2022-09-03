@@ -13,17 +13,11 @@ TextStyle get primaryTextBoldStyle => _textStyle(fontFamily: 'NanumSquareB');
 
 TextStyle get lightTextStyle => _textStyle(color: lightColor);
 
-TextStyle get lightTextBoldStyle => lightTextStyle.copyWith(
-      fontFamily: 'NanumSquareB',
-      fontWeight: FontWeight.w800,
-    );
+TextStyle get lightTextBoldStyle => lightTextStyle.copyWith(fontFamily: 'NanumSquareB', fontWeight: FontWeight.w800);
 
 TextStyle get darkTextStyle => _textStyle(color: darkColor);
 
-TextStyle get darkTextBoldStyle => darkTextStyle.copyWith(
-      fontFamily: 'NanumSquareB',
-      fontWeight: FontWeight.w800,
-    );
+TextStyle get darkTextBoldStyle => darkTextStyle.copyWith(fontFamily: 'NanumSquareB', fontWeight: FontWeight.w800);
 
 TextStyle _textStyle({
   color,

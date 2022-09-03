@@ -1,5 +1,5 @@
 import 'package:flutter_js/flutter_js.dart';
-import 'package:mana_studio/models/script_channel_model.dart';
+import 'package:mana_studio/models/script/script_channel_model.dart';
 import 'package:mana_studio/managers/alert_manager.dart';
 
 const _runCommand = 'main();';

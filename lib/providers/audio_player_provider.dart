@@ -57,7 +57,6 @@ class AudioPlayerProvider extends StateNotifier<AudioPlayerModel> {
   AudioPlayer get _audioPlayer => AudioPlayer();
 }
 
-final audioPlayerProvider =
-    StateNotifierProvider<AudioPlayerProvider, AudioPlayerModel>(
+final audioPlayerProvider = StateNotifierProvider<AudioPlayerProvider, AudioPlayerModel>(
   (ref) => AudioPlayerProvider(ref),
 );

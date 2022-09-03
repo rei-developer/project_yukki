@@ -32,12 +32,13 @@ class _ScriptEditorState extends State<ScriptEditor> {
   void initState() {
     super.initState();
     source = widget.controller.text;
-    _textFieldScrollController.addListener(() {
-      if (_previewController.hasClients &&
-          _textFieldScrollController.hasClients) {
-        _previewController.jumpTo(_textFieldScrollController.position.pixels);
-      }
-    });
+    _textFieldScrollController.addListener(
+      () {
+        if (_previewController.hasClients && _textFieldScrollController.hasClients) {
+          _previewController.jumpTo(_textFieldScrollController.position.pixels);
+        }
+      },
+    );
   }
 
   @override
@@ -65,26 +66,14 @@ class _ScriptEditorState extends State<ScriptEditor> {
                         width: 40,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            ...List.generate(
-                              source.split('\n').length,
-                              (index) => Text(
-                                '${index + 1}',
-                                style: _textStyle,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: RichText(
-                          text: TextSpan(
-                            style: _textStyle,
-                            children: _convert(_nodes),
+                          children: List.generate(
+                            source.split('\n').length,
+                            (index) => Text('${index + 1}', style: _textStyle),
                           ),
                         ),
                       ),
+                      const SizedBox(width: 10),
+                      Expanded(child: RichText(text: TextSpan(style: _textStyle, children: _convert(_nodes)))),
                     ],
                   ),
                 ),
@@ -115,19 +104,11 @@ class _ScriptEditorState extends State<ScriptEditor> {
         currentSpans.add(
           node.className == null
               ? TextSpan(text: node.value)
-              : TextSpan(
-                  text: node.value,
-                  style: widget.theme[node.className!],
-                ),
+              : TextSpan(text: node.value, style: widget.theme[node.className!]),
         );
       } else if (node.children != null) {
         List<TextSpan> temp = [];
-        currentSpans.add(
-          TextSpan(
-            children: temp,
-            style: widget.theme[node.className!],
-          ),
-        );
+        currentSpans.add(TextSpan(children: temp, style: widget.theme[node.className!]));
         stack.add(currentSpans);
         currentSpans = temp;
         for (final n in node.children!) {
@@ -153,6 +134,5 @@ class _ScriptEditorState extends State<ScriptEditor> {
         fontFamily: 'D2Coding',
       );
 
-  List<Node> get _nodes =>
-      highlight.parse(source, language: widget.language).nodes!;
+  List<Node> get _nodes => highlight.parse(source, language: widget.language).nodes!;
 }

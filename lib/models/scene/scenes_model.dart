@@ -1,4 +1,4 @@
-import 'package:mana_studio/models/scenes/scene_model.dart';
+import 'package:mana_studio/models/scene/scene_model.dart';
 
 class ScenesModel {
   ScenesModel(this.defaultScenes, this.localScenes);

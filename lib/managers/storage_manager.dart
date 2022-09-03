@@ -27,23 +27,18 @@ class StorageManager {
 
   Future<List<String>?> get files async {
     try {
-      return (await _directory)
-          .map((e) => e.path)
-          .where((e) => FileSystemEntity.isFileSync(e))
-          .toList();
+      return (await _directory).map((e) => e.path).where((e) => FileSystemEntity.isFileSync(e)).toList();
     } catch (e) {
       print('storage manager files error => $e');
       return null;
     }
   }
 
-  Future<String> get documents async =>
-      (await getApplicationDocumentsDirectory()).path;
+  Future<String> get documents async => (await getApplicationDocumentsDirectory()).path;
 
   Future<String> get _path async => isLocal ? '${await documents}/$path' : path;
 
-  Future<List<FileSystemEntity>> get _directory async =>
-      Directory(await _path).listSync(recursive: true);
+  Future<List<FileSystemEntity>> get _directory async => Directory(await _path).listSync(recursive: true);
 
   Future<File> get _file async => File(await _path).create(recursive: true);
 }

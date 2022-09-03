@@ -8,11 +8,7 @@ class DebuggerProvider extends StateNotifier<List<DebuggerModel>> {
 
   final Ref ref;
 
-  void addDebug(
-    String description, [
-    String type = defaultDebug,
-    bool isPlaySound = true,
-  ]) {
+  void addDebug(String description, [String type = defaultDebug, bool isPlaySound = true]) {
     if (isPlaySound) {
       _audioProvider.setSE('se8.wav');
     }
@@ -28,11 +24,7 @@ class DebuggerProvider extends StateNotifier<List<DebuggerModel>> {
 
   void clear() => state = [];
 
-  AudioPlayerProvider get _audioProvider =>
-      ref.read(audioPlayerProvider.notifier);
+  AudioPlayerProvider get _audioProvider => ref.read(audioPlayerProvider.notifier);
 }
 
-final debuggerProvider =
-    StateNotifierProvider<DebuggerProvider, List<DebuggerModel>>(
-  (ref) => DebuggerProvider(ref),
-);
+final debuggerProvider = StateNotifierProvider<DebuggerProvider, List<DebuggerModel>>((ref) => DebuggerProvider(ref));

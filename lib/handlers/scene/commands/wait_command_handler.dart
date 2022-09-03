@@ -3,8 +3,7 @@ class WaitCommandHandler {
 
   final dynamic data;
 
-  Future<void> get wait async =>
-      await Future.delayed(Duration(milliseconds: _data.duration));
+  Future<void> get wait async => await Future.delayed(Duration(milliseconds: _data.duration));
 
   _WaitCommandModel get _data => _WaitCommandModel.fromJson(data);
 }

@@ -67,13 +67,8 @@ class _CustomAutocompleteState extends State<CustomAutocomplete> {
                   ),
                   itemBuilder: (context, text) => Container(
                     padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: controller.text == text ? primaryColor : darkColor,
-                    ),
-                    child: Text(
-                      '$text',
-                      style: controller.text == text ? darkTextBoldStyle : primaryTextStyle,
-                    ),
+                    decoration: BoxDecoration(color: controller.text == text ? primaryColor : darkColor),
+                    child: Text('$text', style: controller.text == text ? darkTextBoldStyle : primaryTextStyle),
                   ),
                   noItemsFoundBuilder: (_) => Container(),
                   suggestionsBoxVerticalOffset: 10,

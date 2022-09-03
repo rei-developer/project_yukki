@@ -7,11 +7,11 @@ import 'package:mana_studio/config/project_config.dart';
 import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/storage_config.dart';
 import 'package:mana_studio/models/project_model.dart';
-import 'package:mana_studio/models/scenes/scene_content_model.dart';
-import 'package:mana_studio/models/scenes/scene_model.dart';
-import 'package:mana_studio/models/scenes/scenes_model.dart';
-import 'package:mana_studio/models/script_model.dart';
-import 'package:mana_studio/models/scripts_model.dart';
+import 'package:mana_studio/models/scene/scene_content_model.dart';
+import 'package:mana_studio/models/scene/scene_model.dart';
+import 'package:mana_studio/models/scene/scenes_model.dart';
+import 'package:mana_studio/models/script/script_model.dart';
+import 'package:mana_studio/models/script/scripts_model.dart';
 import 'package:mana_studio/providers/audio_player_provider.dart';
 import 'package:mana_studio/providers/debugger_provider.dart';
 import 'package:mana_studio/providers/game_provider.dart';
@@ -99,12 +99,7 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     }
   }
 
-  List<dynamic> _addSceneContent(
-    List<dynamic> contents,
-    dynamic prev,
-    dynamic next,
-  ) =>
-      contents.map(
+  List<dynamic> _addSceneContent(List<dynamic> contents, dynamic prev, dynamic next) => contents.map(
         (content) {
           if (content['children'] == null) {
             if (content['uuid'] == next['uuid']) {
@@ -129,10 +124,7 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
         },
       ).toList();
 
-  List<dynamic> _addSceneContentNewItem(
-    List<dynamic> contents,
-    dynamic content,
-  ) {
+  List<dynamic> _addSceneContentNewItem(List<dynamic> contents, dynamic content) {
     dynamic item = json.decode(json.encode(content));
     item['uuid'] = const Uuid().v4();
     contents = [...contents, item];
@@ -158,8 +150,7 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     changeSceneContent(contents, false);
   }
 
-  List<dynamic> _setSceneContents(List<dynamic> contents, dynamic next) =>
-      contents.map(
+  List<dynamic> _setSceneContents(List<dynamic> contents, dynamic next) => contents.map(
         (content) {
           final uuid = next['uuid'];
           if (content['uuid'] == uuid) {
@@ -178,12 +169,7 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     changeSceneContent(contents, false);
   }
 
-  List<dynamic> _setAllSceneContents(
-    List<dynamic> contents,
-    String key,
-    dynamic value,
-  ) =>
-      contents.map(
+  List<dynamic> _setAllSceneContents(List<dynamic> contents, String key, dynamic value) => contents.map(
         (content) {
           content[key] = value;
           if (content['children'] != null) {
@@ -203,12 +189,7 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     changeSceneContent(contents);
   }
 
-  List<dynamic> _swipeSceneContents(
-    List<dynamic> contents,
-    dynamic prev,
-    dynamic next,
-  ) =>
-      contents.map(
+  List<dynamic> _swipeSceneContents(List<dynamic> contents, dynamic prev, dynamic next) => contents.map(
         (content) {
           content['temp'] = content['uuid'];
           if (content['temp'] == prev['uuid']) {
@@ -250,32 +231,27 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     changeSceneContent(contents, false);
   }
 
-  List<dynamic> _removeSceneContent(
-    List<dynamic> contents,
-    String uuid,
-    bool isClearChildrenOnly,
-  ) =>
-      contents
-          .map(
-            (content) {
-              if (content['uuid'] == uuid && !isClearChildrenOnly) {
-                return null;
-              }
-              if (content['children'] != null) {
-                if (content['uuid'] == uuid && isClearChildrenOnly) {
-                  content['children'] = [];
-                }
-                content['children'] = _removeSceneContent(
-                  content['children'],
-                  uuid,
-                  isClearChildrenOnly,
-                );
-              }
-              return content;
-            },
-          )
-          .where((e) => e != null)
-          .toList();
+  List<dynamic> _removeSceneContent(List<dynamic> contents, String uuid, bool isClearChildrenOnly) => contents
+      .map(
+        (content) {
+          if (content['uuid'] == uuid && !isClearChildrenOnly) {
+            return null;
+          }
+          if (content['children'] != null) {
+            if (content['uuid'] == uuid && isClearChildrenOnly) {
+              content['children'] = [];
+            }
+            content['children'] = _removeSceneContent(
+              content['children'],
+              uuid,
+              isClearChildrenOnly,
+            );
+          }
+          return content;
+        },
+      )
+      .where((e) => e != null)
+      .toList();
 
   Future<void> generateLocalScripts() async {
     List<ScriptModel> localScripts = [];
@@ -299,26 +275,19 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
 
   void setScenes(ScenesModel scenes) => state = state.copyWith(scenes: scenes);
 
-  void setLocalScenes(List<SceneModel> localScenes) =>
-      setScenes(state.scenes.copyWith(localScenes: localScenes));
+  void setLocalScenes(List<SceneModel> localScenes) => setScenes(state.scenes.copyWith(localScenes: localScenes));
 
-  void setScripts(ScriptsModel scripts) =>
-      state = state.copyWith(scripts: scripts);
+  void setScripts(ScriptsModel scripts) => state = state.copyWith(scripts: scripts);
 
   void clearSceneContent() => changeSceneContent([], false);
 
-  int get _findLocalSceneIndex => state.scenes.localScenes.indexWhere(
-        (e) => e.fileName == state.sceneName,
-      );
+  int get _findLocalSceneIndex => state.scenes.localScenes.indexWhere((e) => e.fileName == state.sceneName);
 
-  AudioPlayerProvider get _audioProvider =>
-      ref.read(audioPlayerProvider.notifier);
+  AudioPlayerProvider get _audioProvider => ref.read(audioPlayerProvider.notifier);
 
   GameProvider get _gameProvider => ref.read(gameProvider.notifier);
 
   DebuggerProvider get _debuggerProvider => ref.read(debuggerProvider.notifier);
 }
 
-final projectProvider = StateNotifierProvider<ProjectProvider, ProjectModel>(
-  (ref) => ProjectProvider(ref),
-);
+final projectProvider = StateNotifierProvider<ProjectProvider, ProjectModel>((ref) => ProjectProvider(ref));

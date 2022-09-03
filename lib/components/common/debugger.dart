@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/components/common/custom_section.dart';
-import 'package:mana_studio/components/common/custom_section_header_button.dart';
+import 'package:mana_studio/components/common/section.dart';
+import 'package:mana_studio/components/common/section_header_button.dart';
 import 'package:mana_studio/config/debugger_config.dart';
 import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/i18n/strings.g.dart';
@@ -9,21 +9,21 @@ import 'package:mana_studio/models/debugger_model.dart';
 import 'package:mana_studio/providers/debugger_provider.dart';
 import 'package:mana_studio/utils/func.dart';
 
-class DebugConsole extends ConsumerStatefulWidget {
-  const DebugConsole({Key? key}) : super(key: key);
+class Debugger extends ConsumerStatefulWidget {
+  const Debugger({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<DebugConsole> createState() => _DebugConsoleState();
+  ConsumerState<Debugger> createState() => _DebugConsoleState();
 }
 
-class _DebugConsoleState extends ConsumerState<DebugConsole> {
+class _DebugConsoleState extends ConsumerState<Debugger> {
   final ScrollController controller = ScrollController();
   bool isPined = false;
 
   @override
   Widget build(BuildContext context) {
     _listenDebugger();
-    return CustomSection(
+    return Section(
       t.headers.debugger,
       ListView(
         controller: controller,
@@ -34,32 +34,32 @@ class _DebugConsoleState extends ConsumerState<DebugConsole> {
       ),
       icon: CupertinoIcons.captions_bubble,
       headerButtons: [
-        CustomSectionHeaderButton(
+        SectionHeaderButton(
           icon: isPined ? CupertinoIcons.pin_fill : CupertinoIcons.pin_slash,
           tooltip: isPined ? t.common.unpin : t.common.pin,
           callback: (_) => setState(() => isPined = !isPined),
         ),
-        CustomSectionHeaderButton(
+        SectionHeaderButton(
           icon: CupertinoIcons.arrow_up,
           tooltip: t.common.up,
           callback: (_) => _upperScrollTo(-100),
         ),
-        CustomSectionHeaderButton(
+        SectionHeaderButton(
           icon: CupertinoIcons.arrow_up_to_line,
           tooltip: t.common.upToLine,
           callback: (_) => _animateTo(0),
         ),
-        CustomSectionHeaderButton(
+        SectionHeaderButton(
           icon: CupertinoIcons.arrow_down,
           tooltip: t.common.down,
           callback: (_) => _upperScrollTo(100),
         ),
-        CustomSectionHeaderButton(
+        SectionHeaderButton(
           icon: CupertinoIcons.arrow_down_to_line,
           tooltip: t.common.downToLine,
           callback: (_) => _animateTo(),
         ),
-        CustomSectionHeaderButton(
+        SectionHeaderButton(
           icon: CupertinoIcons.trash_fill,
           audioPath: 'se5.wav',
           tooltip: t.common.clear,
@@ -97,16 +97,10 @@ class _DebugConsoleState extends ConsumerState<DebugConsole> {
   }
 
   Widget _renderLabelBox(String label, Color color) => Container(
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: const BorderRadius.all(Radius.circular(3)),
-        ),
+        decoration: BoxDecoration(color: color, borderRadius: const BorderRadius.all(Radius.circular(3))),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: Text(
-            label,
-            style: darkTextBoldStyle,
-          ),
+          child: Text(label, style: darkTextBoldStyle),
         ),
       );
 
@@ -116,16 +110,9 @@ class _DebugConsoleState extends ConsumerState<DebugConsole> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _renderLabelBox(e.type, e.color),
-            const SizedBox(width: 5),
             _renderLabelBox(e.time, dateTimeDebugColor),
-            const SizedBox(width: 5),
-            Expanded(
-              child: Text(
-                ': ${e.description}',
-                style: lightTextStyle,
-              ),
-            ),
-          ],
+            Expanded(child: Text(': ${e.description}', style: lightTextStyle)),
+          ].superJoin(const SizedBox(width: 5)).toList(),
         ),
       )
       .toList();

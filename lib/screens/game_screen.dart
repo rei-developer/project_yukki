@@ -22,9 +22,7 @@ class GameScreen extends StatelessWidget {
             onPressed: () => print('test'),
           ),
         ),
-        child: SafeArea(
-          child: _widgets[currentIndex],
-        ),
+        child: SafeArea(child: _widgets[currentIndex]),
       );
 
   List<Widget> get _widgets => [

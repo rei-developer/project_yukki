@@ -1,7 +1,7 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/components/common/custom_section.dart';
+import 'package:mana_studio/components/common/section.dart';
 import 'package:mana_studio/components/common/custom_tooltip.dart';
 import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/ui_config.dart';
@@ -10,15 +10,14 @@ import 'package:mana_studio/providers/audio_player_provider.dart';
 import 'package:mana_studio/utils/func.dart';
 import 'package:uuid/uuid.dart';
 
-class SceneCommandComponent extends ConsumerStatefulWidget {
-  const SceneCommandComponent({Key? key}) : super(key: key);
+class ManageCommandComponent extends ConsumerStatefulWidget {
+  const ManageCommandComponent({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<SceneCommandComponent> createState() =>
-      _SceneCommandComponentState();
+  ConsumerState<ManageCommandComponent> createState() => _ManageCommandComponentState();
 }
 
-class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
+class _ManageCommandComponentState extends ConsumerState<ManageCommandComponent> {
   String commandType = basicCommandType;
   MouseCursor cursor = SystemMouseCursors.grab;
 
@@ -29,22 +28,14 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
   }
 
   @override
-  Widget build(BuildContext context) => CustomSection(
+  Widget build(BuildContext context) => Section(
         '${t.headers.commands} - ${_getCommandsLabel()}',
         ListView(
           controller: ScrollController(),
           children: [
-            Wrap(
-              children: [
-                ..._renderCommands,
-              ].superJoin(const SizedBox(width: 5)).toList(),
-            ),
+            Wrap(children: [..._renderCommands].superJoin(const SizedBox(width: 5)).toList()),
             const SizedBox(height: 20),
-            Column(
-              children: [
-                ..._renderSelectedCommands,
-              ].superJoin(const SizedBox(height: 10)).toList(),
-            ),
+            Column(children: [..._renderSelectedCommands].superJoin(const SizedBox(height: 10)).toList()),
           ],
         ),
         icon: CupertinoIcons.command,
@@ -58,13 +49,7 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
     setState(() => commandType = type);
   }
 
-  Widget _renderCommandBox(
-    IconData icon,
-    IconData activatedIcon,
-    Color color,
-    bool isActivated,
-  ) =>
-      Container(
+  Widget _renderCommandBox(IconData icon, IconData activatedIcon, Color color, bool isActivated) => Container(
         decoration: BoxDecoration(
           color: color.withOpacity(isActivated ? 0.3 : 0.1),
           border: Border.all(color: color),
@@ -80,15 +65,11 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
         ),
       );
 
-  Widget _renderSelectedCommandBox(dynamic command, Color color) =>
-      CustomTooltip(
+  Widget _renderSelectedCommandBox(dynamic command, Color color) => CustomTooltip(
         Container(
           decoration: BoxDecoration(color: color.withOpacity(0.2)),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 5,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Text(
               _getSelectedCommandLabel(command['type']),
               style: primaryTextStyle.copyWith(color: color),
@@ -98,8 +79,7 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
         tooltip: _getSelectedCommandTooltip(command['type']),
       );
 
-  List<Widget> _renderSelectedCommandItems(List<dynamic> commands) =>
-      commands.map(
+  List<Widget> _renderSelectedCommandItems(List<dynamic> commands) => commands.map(
         (command) {
           command['uuid'] = const Uuid().v4();
           final widget = _renderSelectedCommandBox(command, _color);
@@ -108,29 +88,21 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
             child: Draggable(
               feedback: widget,
               data: command,
-              onDragStarted: () => setState(
-                () => cursor = SystemMouseCursors.grabbing,
-              ),
-              onDragEnd: (_) => setState(
-                () => cursor = SystemMouseCursors.grab,
-              ),
+              onDragStarted: () => setState(() => cursor = SystemMouseCursors.grabbing),
+              onDragEnd: (_) => setState(() => cursor = SystemMouseCursors.grab),
               child: widget,
             ),
           );
         },
       ).toList();
 
-  String _getCommandsLabel([String? key]) =>
-      t['scene.commandType.${key ?? commandType}.label'];
+  String _getCommandsLabel([String? key]) => t['scene.commandType.${key ?? commandType}.label'];
 
-  String _getSelectedCommandsLabel([String? key]) =>
-      t['scene.commandType.$commandType.commands.$key'];
+  String _getSelectedCommandsLabel([String? key]) => t['scene.commandType.$commandType.commands.$key'];
 
-  String _getSelectedCommandLabel([String? key]) =>
-      t['scene.command.$key.label'];
+  String _getSelectedCommandLabel([String? key]) => t['scene.command.$key.label'];
 
-  String _getSelectedCommandTooltip([String? key]) =>
-      t['scene.command.$key.tooltip'];
+  String _getSelectedCommandTooltip([String? key]) => t['scene.command.$key.tooltip'];
 
   List<Widget> get _renderCommands => commands.entries
       .map(
@@ -158,20 +130,10 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
           children: [
             Text(
               _getSelectedCommandsLabel(entry.key),
-              style: primaryTextBoldStyle.copyWith(
-                color: _color,
-                fontStyle: FontStyle.italic,
-              ),
+              style: primaryTextBoldStyle.copyWith(color: _color, fontStyle: FontStyle.italic),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: DottedLine(dashColor: _color),
-            ),
-            Wrap(
-              children: [
-                ..._renderSelectedCommandItems(entry.value),
-              ].superJoin(const SizedBox(width: 5)).toList(),
-            ),
+            Padding(padding: const EdgeInsets.symmetric(vertical: 5), child: DottedLine(dashColor: _color)),
+            Wrap(children: [..._renderSelectedCommandItems(entry.value)].superJoin(const SizedBox(width: 5)).toList()),
           ],
         ),
       )
@@ -181,6 +143,5 @@ class _SceneCommandComponentState extends ConsumerState<SceneCommandComponent> {
 
   Map<String, dynamic> get _commands => commands[commandType]['commands'];
 
-  AudioPlayerProvider get _audioProvider =>
-      ref.read(audioPlayerProvider.notifier);
+  AudioPlayerProvider get _audioProvider => ref.read(audioPlayerProvider.notifier);
 }

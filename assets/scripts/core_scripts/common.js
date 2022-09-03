@@ -1,5 +1,4 @@
-const alert = (description, options = {}) =>
-    _call('alert', _json({ title: options?.title, description }))
+const alert = (description, options = {}) => _call('alert', _json({ title: options?.title, description }))
 
 const _json = args => JSON.stringify(args)
 

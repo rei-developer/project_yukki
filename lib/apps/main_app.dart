@@ -5,7 +5,7 @@ import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/i18n/strings.g.dart';
 import 'package:mana_studio/providers/project_provider.dart';
 import 'package:mana_studio/router.dart';
-import 'package:mana_studio/utils/handlers/main_handler.dart';
+import 'package:mana_studio/handlers/main_handler.dart';
 
 class MainApp extends ConsumerStatefulWidget {
   const MainApp({Key? key}) : super(key: key);

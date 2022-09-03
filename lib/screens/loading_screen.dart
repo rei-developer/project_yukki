@@ -10,7 +10,5 @@ class LoadingScreen extends StatefulWidget {
 
 class _LoadingScreenState extends State<LoadingScreen> {
   @override
-  Widget build(BuildContext context) => const CupertinoActivityIndicator(
-        radius: 32,
-      );
+  Widget build(BuildContext context) => const CupertinoActivityIndicator(radius: 32);
 }

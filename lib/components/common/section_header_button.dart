@@ -4,8 +4,8 @@ import 'package:mana_studio/components/common/custom_tooltip.dart';
 import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/providers/audio_player_provider.dart';
 
-class CustomSectionHeaderButton extends ConsumerStatefulWidget {
-  const CustomSectionHeaderButton({
+class SectionHeaderButton extends ConsumerStatefulWidget {
+  const SectionHeaderButton({
     this.icon = CupertinoIcons.xmark,
     this.audioPath = 'move.mp3',
     this.tooltip,
@@ -21,21 +21,14 @@ class CustomSectionHeaderButton extends ConsumerStatefulWidget {
   final Function(VoidCallback? pong)? callback;
 
   @override
-  ConsumerState<CustomSectionHeaderButton> createState() =>
-      _CustomSectionHeaderButtonState();
+  ConsumerState<SectionHeaderButton> createState() => _CustomSectionHeaderButtonState();
 }
 
-class _CustomSectionHeaderButtonState
-    extends ConsumerState<CustomSectionHeaderButton> {
+class _CustomSectionHeaderButtonState extends ConsumerState<SectionHeaderButton> {
   @override
   Widget build(BuildContext context) => CustomTooltip(
         Container(
-          decoration: BoxDecoration(
-            color: darkColor,
-            border: Border.all(
-              color: primaryLightColor,
-            ),
-          ),
+          decoration: BoxDecoration(color: darkColor, border: Border.all(color: primaryLightColor)),
           child: CupertinoButton(
             minSize: 0,
             padding: EdgeInsets.zero,
@@ -61,6 +54,5 @@ class _CustomSectionHeaderButtonState
         tooltip: widget.tooltip,
       );
 
-  AudioPlayerProvider get _audioProvider =>
-      ref.read(audioPlayerProvider.notifier);
+  AudioPlayerProvider get _audioProvider => ref.read(audioPlayerProvider.notifier);
 }

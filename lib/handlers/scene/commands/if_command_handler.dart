@@ -1,5 +1,5 @@
 import 'package:mana_studio/config/scene_command_config.dart';
-import 'package:mana_studio/models/scenes/scene_content_model.dart';
+import 'package:mana_studio/models/scene/scene_content_model.dart';
 
 class IfCommandHandler {
   IfCommandHandler(this.data, this.type, [this.prev]);
@@ -45,8 +45,7 @@ class IfCommandHandler {
     if (prev == null) {
       return true;
     }
-    return !((prev?.type != ifCommand && prev?.type != elseIfCommand) ||
-        prev?.type == elseCommand);
+    return !((prev?.type != ifCommand && prev?.type != elseIfCommand) || prev?.type == elseCommand);
   }
 
   dynamic get _variable => 300;

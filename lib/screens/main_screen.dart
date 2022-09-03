@@ -18,12 +18,7 @@ class MainScreen extends StatelessWidget {
           middle: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                t.title,
-                style: lightTextBoldStyle,
-              ),
-            ],
+            children: [Text(t.title, style: lightTextBoldStyle)],
           ),
           trailing: Wrap(
             children: [

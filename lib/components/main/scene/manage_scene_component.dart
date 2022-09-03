@@ -4,28 +4,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mana_studio/components/common/custom_autocomplete.dart';
 import 'package:mana_studio/components/common/custom_divider.dart';
 import 'package:mana_studio/components/common/custom_icon_button.dart';
-import 'package:mana_studio/components/common/custom_section.dart';
-import 'package:mana_studio/components/common/custom_section_header_button.dart';
-import 'package:mana_studio/managers/scene_command_context_manager.dart';
+import 'package:mana_studio/components/common/section.dart';
+import 'package:mana_studio/components/common/section_header_button.dart';
+import 'package:mana_studio/managers/scene/scene_command_package_manager.dart';
 import 'package:mana_studio/config/debugger_config.dart';
 import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/i18n/strings.g.dart';
 import 'package:mana_studio/models/project_model.dart';
+import 'package:mana_studio/models/scene/scene_command_package_model.dart';
 import 'package:mana_studio/providers/debugger_provider.dart';
 import 'package:mana_studio/providers/project_provider.dart';
 import 'package:mana_studio/utils/func.dart';
 import 'package:mana_studio/managers/alert_manager.dart';
 import 'package:mana_studio/utils/masker.dart';
 
-class SceneManageComponent extends ConsumerStatefulWidget {
-  const SceneManageComponent({Key? key}) : super(key: key);
+class ManageSceneComponent extends ConsumerStatefulWidget {
+  const ManageSceneComponent({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<SceneManageComponent> createState() => _SceneManageComponentState();
+  ConsumerState<ManageSceneComponent> createState() => _ManageSceneComponentState();
 }
 
-class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
+class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
   final controller = ScrollController();
   MouseCursor cursor = SystemMouseCursors.basic;
   dynamic selectedContent;
@@ -33,7 +34,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
   bool isLocked = false;
 
   @override
-  Widget build(BuildContext context) => CustomSection(
+  Widget build(BuildContext context) => Section(
         t.headers.scene(sceneName: _sceneName),
         MouseRegion(
           cursor: cursor,
@@ -67,42 +68,42 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
         ),
         icon: CupertinoIcons.book,
         headerButtons: [
-          CustomSectionHeaderButton(
+          SectionHeaderButton(
             icon: isLocked ? CupertinoIcons.lock_fill : CupertinoIcons.lock_open,
             tooltip: isLocked ? t.common.unlock : t.common.lock,
             callback: (_) => _toggleLock(),
           ),
-          CustomSectionHeaderButton(
+          SectionHeaderButton(
             icon: CupertinoIcons.fullscreen,
             tooltip: t.common.unfold,
             callback: (_) => _toggleFoldAll(),
           ),
-          CustomSectionHeaderButton(
+          SectionHeaderButton(
             icon: CupertinoIcons.fullscreen_exit,
             tooltip: t.common.fold,
             callback: (_) => _toggleFoldAll(true),
           ),
-          CustomSectionHeaderButton(
+          SectionHeaderButton(
             icon: CupertinoIcons.arrow_up,
             tooltip: t.common.up,
             callback: (_) => _upperScrollTo(-(_scrollHeight / 4)),
           ),
-          CustomSectionHeaderButton(
+          SectionHeaderButton(
             icon: CupertinoIcons.arrow_up_to_line,
             tooltip: t.common.upToLine,
             callback: (_) => _animateTo(0),
           ),
-          CustomSectionHeaderButton(
+          SectionHeaderButton(
             icon: CupertinoIcons.arrow_down,
             tooltip: t.common.down,
             callback: (_) => _upperScrollTo(_scrollHeight / 4),
           ),
-          CustomSectionHeaderButton(
+          SectionHeaderButton(
             icon: CupertinoIcons.arrow_down_to_line,
             tooltip: t.common.downToLine,
             callback: (_) => _animateTo(),
           ),
-          CustomSectionHeaderButton(
+          SectionHeaderButton(
             icon: isLocked ? CupertinoIcons.trash_slash : CupertinoIcons.trash_fill,
             audioPath: 'se5.wav',
             tooltip: t.common.clear,
@@ -153,7 +154,13 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     final uuid = content['uuid'];
     final type = content['type'];
     final color = getCommandColor(type);
-    final render = SceneCommandContextManager(content, color, (next) => _projectProvider.setSceneContent(next)).render;
+    final render = SceneCommandPackageManager(
+      SceneCommandPackageModel(
+        content,
+        color,
+        (next) => _projectProvider.setSceneContent(next),
+      ),
+    ).render;
     final children = content['children'] as List<dynamic>?;
     final isSelected = uuid == _selectedUUID;
     final isFolded = content['isFolded'] ?? false;
@@ -209,14 +216,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                           child: Row(
                             children: <Widget>[
                               if (!isPossibleHasChildren(type) && render == null)
-                                SizedBox(
-                                  width: 10,
-                                  child: Icon(
-                                    CupertinoIcons.circle_fill,
-                                    size: 6,
-                                    color: color,
-                                  ),
-                                )
+                                SizedBox(width: 10, child: Icon(CupertinoIcons.circle_fill, size: 6, color: color))
                               else
                                 MouseRegion(
                                   cursor: cursor,
@@ -288,11 +288,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
-                  Icon(
-                    CupertinoIcons.drop,
-                    size: isRoot ? 18 : 14,
-                    color: primaryColor,
-                  ),
+                  Icon(CupertinoIcons.drop, size: isRoot ? 18 : 14, color: primaryColor),
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(

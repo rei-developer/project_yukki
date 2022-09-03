@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mana_studio/components/common/custom_resizable_widget.dart';
-import 'package:mana_studio/components/common/debug_console.dart';
-import 'package:mana_studio/components/main/scene_manage/scene_command_component.dart';
-import 'package:mana_studio/components/main/scene_manage/scene_manage_component.dart';
+import 'package:mana_studio/components/common/debugger.dart';
+import 'package:mana_studio/components/main/scene/manage_command_component.dart';
+import 'package:mana_studio/components/main/scene/manage_scene_component.dart';
 import 'package:mana_studio/models/game_model.dart';
 import 'package:mana_studio/models/project_model.dart';
 import 'package:mana_studio/providers/audio_player_provider.dart';
@@ -31,11 +31,11 @@ class _MainContainerState extends ConsumerState<MainContainer> {
           Image.asset('assets/images/sample.png'),
           const CustomResizableWidget(
             [
-              SceneManageComponent(),
+              ManageSceneComponent(),
               CustomResizableWidget(
                 [
-                  SceneCommandComponent(),
-                  DebugConsole(),
+                  ManageCommandComponent(),
+                  Debugger(),
                 ],
                 percentages: [0.6, 0.4],
                 isHorizontal: true,
@@ -61,8 +61,7 @@ class _MainContainerState extends ConsumerState<MainContainer> {
 
   List<dynamic> get _sceneData => _gameState.contents;
 
-  AudioPlayerProvider get _audioProvider =>
-      ref.read(audioPlayerProvider.notifier);
+  AudioPlayerProvider get _audioProvider => ref.read(audioPlayerProvider.notifier);
 
   ProjectProvider get _projectProvider => ref.read(projectProvider.notifier);
 

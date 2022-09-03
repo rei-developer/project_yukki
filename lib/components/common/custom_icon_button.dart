@@ -41,6 +41,5 @@ class _CustomIconButtonState extends ConsumerState<CustomIconButton> {
         },
       );
 
-  AudioPlayerProvider get _audioProvider =>
-      ref.read(audioPlayerProvider.notifier);
+  AudioPlayerProvider get _audioProvider => ref.read(audioPlayerProvider.notifier);
 }

@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/models/game_model.dart';
-import 'package:mana_studio/models/scenes/scene_content_model.dart';
+import 'package:mana_studio/models/scene/scene_content_model.dart';
 import 'package:mana_studio/utils/func.dart';
-import 'package:mana_studio/utils/handlers/commands/if_command_handler.dart';
-import 'package:mana_studio/utils/handlers/commands/wait_command_handler.dart';
+import 'package:mana_studio/handlers/scene/commands/if_command_handler.dart';
+import 'package:mana_studio/handlers/scene/commands/wait_command_handler.dart';
 
 class GameProvider extends StateNotifier<GameModel> {
   GameProvider(this.ref) : super(GameModel.initial());
@@ -82,14 +82,11 @@ class GameProvider extends StateNotifier<GameModel> {
     runSceneContent();
   }
 
-  void setSceneContentIndexes(List<int> contentIndexes) =>
-      state = state.copyWith(contentIndexes: contentIndexes);
+  void setSceneContentIndexes(List<int> contentIndexes) => state = state.copyWith(contentIndexes: contentIndexes);
 
-  void setSceneContents(dynamic contents) =>
-      state = state.copyWith(contents: contents);
+  void setSceneContents(dynamic contents) => state = state.copyWith(contents: contents);
 
-  void setIsPossibleNext([bool? isPossibleNext = true]) =>
-      state = state.copyWith(isPossibleNext: isPossibleNext);
+  void setIsPossibleNext([bool? isPossibleNext = true]) => state = state.copyWith(isPossibleNext: isPossibleNext);
 
   List<int>? _getSceneNextIndexes(List<int> indexes) {
     if (_hasSceneContent(indexes)) {
@@ -106,8 +103,7 @@ class GameProvider extends StateNotifier<GameModel> {
   List<int>? _getNextSceneContentIndexes([bool isChild = false]) {
     if (isChild) {
       final childIndexes = (_sceneContent?.children.firstOrNull)?.indexes;
-      if (!(childIndexes == null || childIndexes.isEmpty) &&
-          _hasSceneContent(childIndexes)) {
+      if (!(childIndexes == null || childIndexes.isEmpty) && _hasSceneContent(childIndexes)) {
         return childIndexes;
       }
     }
@@ -128,15 +124,12 @@ class GameProvider extends StateNotifier<GameModel> {
     return _getSceneContent(indexes);
   }
 
-  SceneContentModel? _getSceneContent([List<int>? indexes]) => state.contents
-      .where((e) => e.contentId == (indexes ?? state.contentIndexes).join('-'))
-      .firstOrNull;
+  SceneContentModel? _getSceneContent([List<int>? indexes]) =>
+      state.contents.where((e) => e.contentId == (indexes ?? state.contentIndexes).join('-')).firstOrNull;
 
   bool _hasSceneContent(List<int> indexes) => _getSceneContent(indexes) != null;
 
   SceneContentModel? get _sceneContent => _getSceneContent();
 }
 
-final gameProvider = StateNotifierProvider<GameProvider, GameModel>(
-  (ref) => GameProvider(ref),
-);
+final gameProvider = StateNotifierProvider<GameProvider, GameModel>((ref) => GameProvider(ref));
