@@ -22,14 +22,14 @@ class SceneManageComponent extends ConsumerStatefulWidget {
   const SceneManageComponent({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<SceneManageComponent> createState() =>
-      _SceneManageComponentState();
+  ConsumerState<SceneManageComponent> createState() => _SceneManageComponentState();
 }
 
 class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
   final controller = ScrollController();
   MouseCursor cursor = SystemMouseCursors.basic;
   dynamic selectedContent;
+  bool isDragging = false;
   bool isLocked = false;
 
   @override
@@ -68,8 +68,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
         icon: CupertinoIcons.book,
         headerButtons: [
           CustomSectionHeaderButton(
-            icon:
-                isLocked ? CupertinoIcons.lock_fill : CupertinoIcons.lock_open,
+            icon: isLocked ? CupertinoIcons.lock_fill : CupertinoIcons.lock_open,
             tooltip: isLocked ? t.common.unlock : t.common.lock,
             callback: (_) => _toggleLock(),
           ),
@@ -104,9 +103,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
             callback: (_) => _animateTo(),
           ),
           CustomSectionHeaderButton(
-            icon: isLocked
-                ? CupertinoIcons.trash_slash
-                : CupertinoIcons.trash_fill,
+            icon: isLocked ? CupertinoIcons.trash_slash : CupertinoIcons.trash_fill,
             audioPath: 'se5.wav',
             tooltip: t.common.clear,
             isPlaySoundAfterPong: true,
@@ -115,31 +112,10 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
         ],
       );
 
-  List<Widget> _generateSceneContents(
-    List<dynamic> contents, [
-    bool isRoot = false,
-  ]) =>
-      [
-        ...contents
-            .map(
-              (e) => Draggable(
-                feedback: _renderSceneContentFeedback(e),
-                data: e,
-                childWhenDragging: _renderSceneContent(e, isRoot, !isLocked),
-                onDragStarted: () => _setCursor(SystemMouseCursors.grabbing),
-                onDragEnd: (_) => _setCursor(),
-                child: _renderSceneContent(e, isRoot),
-              ),
-            )
-            .toList(),
+  List<Widget> _generateSceneContents(List<dynamic> contents, [bool isRoot = false]) => [
+        ...contents.map((content) => _renderSceneContent(content, isRoot)).toList(),
         if (!isLocked && isRoot) _renderAdditionalArea(contents, isRoot),
-      ]
-          .superJoin(
-            CustomDivider(
-              color: (isRoot ? darkColor : pitchBlackColor).withOpacity(0.2),
-            ),
-          )
-          .toList();
+      ].superJoin(CustomDivider(color: (isRoot ? darkColor : pitchBlackColor).withOpacity(0.2))).toList();
 
   Widget _renderSceneContentFeedback(dynamic content) {
     if (isLocked) {
@@ -152,19 +128,14 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     return Container(
       decoration: BoxDecoration(color: color.withOpacity(0.2)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 5,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
               children: [
                 Text(
-                  childrenLength > 0
-                      ? '$typeName 및 $childrenLength개의 ${t.scene.children}...'
-                      : typeName,
+                  childrenLength > 0 ? '$typeName 및 $childrenLength개의 ${t.scene.children}...' : typeName,
                   style: primaryTextStyle.copyWith(color: color),
                 ),
                 const SizedBox(width: 5),
@@ -177,44 +148,24 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     );
   }
 
-  Widget _renderSceneContent(
-    dynamic content, [
-    bool isRoot = false,
-    bool isDragging = false,
-  ]) {
+  Widget _renderSceneContent(dynamic content, [bool isRoot = false]) {
     final label = t['scene.command.${content['type']}.label'];
     final uuid = content['uuid'];
     final type = content['type'];
     final color = getCommandColor(type);
-    final render = SceneCommandContextManager(
-      content,
-      color,
-      () {
-        if (_selectedUUID == uuid) {
-          return;
-        }
-        _setSelectedContent(content);
-      },
-      (next) => _projectProvider.setSceneContent(next),
-    ).render;
+    final render = SceneCommandContextManager(content, color, (next) => _projectProvider.setSceneContent(next)).render;
     final children = content['children'] as List<dynamic>?;
     final isSelected = uuid == _selectedUUID;
     final isFolded = content['isFolded'] ?? false;
     final hasChildren = children != null && children.isNotEmpty;
     return Opacity(
-      opacity: isDragging ? 0.1 : 1,
+      opacity: isSelected && isDragging ? 0.1 : 1,
       child: GestureDetector(
         onTap: () => _setSelectedContent(content),
-        onDoubleTap: () => _setContentIsFolded(content, !isFolded),
         child: Container(
           decoration: BoxDecoration(
             color: isRoot ? color.withOpacity(isSelected ? 0.25 : 0.1) : null,
-            border: Border(
-              left: BorderSide(
-                color: isSelected ? color : color.withOpacity(0.1),
-                width: 10,
-              ),
-            ),
+            border: Border(left: BorderSide(color: isSelected ? color : color.withOpacity(0.1), width: 10)),
           ),
           child: Padding(
             padding: const EdgeInsets.all(10),
@@ -228,10 +179,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                     }
                     final dataChildren = data['children'];
                     if (dataChildren != null && dataChildren.length > 0) {
-                      final result = await AlertManager.show(
-                        '정말로 옮길 거니?',
-                        noLabel: '아니오',
-                      );
+                      final result = await AlertManager.show('정말로 옮길 거니?', noLabel: '아니오');
                       if (result != CustomButton.positiveButton) {
                         return;
                       }
@@ -242,59 +190,62 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                   builder: (context, _, __) => Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          if (!isPossibleHasChildren(type) && render == null)
-                            SizedBox(
-                              width: 10,
-                              child: Icon(
-                                CupertinoIcons.circle_fill,
-                                size: 6,
-                                color: color,
-                              ),
-                            )
-                          else
-                            MouseRegion(
-                              cursor: cursor,
-                              onHover: (_) =>
-                                  _setCursor(SystemMouseCursors.click),
-                              onExit: (_) => _setCursor(),
-                              child: SizedBox(
-                                width: 10,
-                                child: CustomIconButton(
-                                  isFolded
-                                      ? CupertinoIcons.chevron_right
-                                      : CupertinoIcons.chevron_down,
-                                  color: color,
-                                  callback: () => _setContentIsFolded(
-                                    content,
-                                    !isFolded,
+                      Draggable(
+                        axis: Axis.vertical,
+                        data: content,
+                        onDragStarted: () {
+                          _setCursor(SystemMouseCursors.grabbing);
+                          _setSelectedContent(content);
+                          _setIsDragging(true);
+                        },
+                        onDragEnd: (_) {
+                          _setCursor();
+                          _setIsDragging();
+                        },
+                        feedback: _renderSceneContentFeedback(content),
+                        childWhenDragging: Container(height: 14),
+                        child: GestureDetector(
+                          onDoubleTap: () => _setContentIsFolded(content, !isFolded),
+                          child: Row(
+                            children: <Widget>[
+                              if (!isPossibleHasChildren(type) && render == null)
+                                SizedBox(
+                                  width: 10,
+                                  child: Icon(
+                                    CupertinoIcons.circle_fill,
+                                    size: 6,
+                                    color: color,
+                                  ),
+                                )
+                              else
+                                MouseRegion(
+                                  cursor: cursor,
+                                  onHover: (_) => _setCursor(SystemMouseCursors.click),
+                                  onExit: (_) => _setCursor(),
+                                  child: SizedBox(
+                                    width: 10,
+                                    child: CustomIconButton(
+                                      isFolded ? CupertinoIcons.chevron_right : CupertinoIcons.chevron_down,
+                                      color: color,
+                                      callback: () => _setContentIsFolded(content, !isFolded),
+                                    ),
                                   ),
                                 ),
+                              SizedBox(
+                                width: 160,
+                                child: Text(label, style: primaryTextBoldStyle.copyWith(color: color)),
                               ),
-                            ),
-                          SizedBox(
-                            width: 160,
-                            child: Text(
-                              label,
-                              style:
-                                  primaryTextBoldStyle.copyWith(color: color),
-                            ),
+                              Expanded(child: Text('$isFolded', style: TextStyle(color: color))),
+                              _renderUUID(uuid, color),
+                              Row(
+                                children: <Widget>[
+                                  if (hasChildren) _renderClearButton(uuid, color, true),
+                                  _renderClearButton(uuid, color),
+                                ].superJoin(const SizedBox(width: 3)).toList(),
+                              ),
+                            ].superJoin(const SizedBox(width: 10)).toList(),
                           ),
-                          Expanded(
-                              child: Text(
-                            '$isFolded',
-                            style: TextStyle(color: color),
-                          )),
-                          _renderUUID(uuid, color),
-                          Row(
-                            children: <Widget>[
-                              if (hasChildren)
-                                _renderClearButton(uuid, color, true),
-                              _renderClearButton(uuid, color),
-                            ].superJoin(const SizedBox(width: 3)).toList(),
-                          ),
-                        ].superJoin(const SizedBox(width: 10)).toList(),
+                        ),
                       ),
                       if (render != null && !isFolded) render,
                     ].superJoin(const SizedBox(height: 10)).toList(),
@@ -307,12 +258,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                         Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: Container(
-                            decoration: BoxDecoration(
-                              color: darkColor,
-                              border: Border.all(
-                                color: primaryLightColor,
-                              ),
-                            ),
+                            decoration: BoxDecoration(color: darkColor, border: Border.all(color: primaryLightColor)),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: _generateSceneContents(children),
@@ -330,20 +276,14 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     );
   }
 
-  Widget _renderAdditionalArea([
-    dynamic content,
-    bool isRoot = false,
-  ]) =>
-      DragTarget(
+  Widget _renderAdditionalArea([dynamic content, bool isRoot = false]) => DragTarget(
         onAccept: (dynamic data) => _addSceneContent(data, content, isRoot),
         builder: (context, _, __) => Padding(
           padding: EdgeInsets.only(top: isRoot ? 0 : 10),
           child: Container(
             height: isRoot ? 50 : 30,
             alignment: Alignment.centerLeft,
-            decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.1),
-            ),
+            decoration: BoxDecoration(color: primaryColor.withOpacity(0.1)),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
@@ -357,9 +297,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                   Expanded(
                     child: Text(
                       t.scene.add,
-                      style: isRoot
-                          ? primaryTextStyle.copyWith(fontSize: 14)
-                          : primaryTextStyle,
+                      style: isRoot ? primaryTextStyle.copyWith(fontSize: 14) : primaryTextStyle,
                     ),
                   ),
                   _renderUUID(isRoot ? 'root' : content['uuid']),
@@ -372,35 +310,17 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
 
   Widget _renderUUID(String uuid, [Color color = primaryColor]) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: const BorderRadius.all(Radius.circular(2)),
-        ),
-        child: Text(
-          Masker(uuid).mask,
-          style: darkTextBoldStyle.copyWith(fontSize: 11),
-        ),
+        decoration: BoxDecoration(color: color, borderRadius: const BorderRadius.all(Radius.circular(2))),
+        child: Text(Masker(uuid).mask, style: darkTextBoldStyle.copyWith(fontSize: 11)),
       );
 
-  Widget _renderClearButton(
-    String uuid,
-    Color color, [
-    bool isClearChildrenOnly = false,
-  ]) =>
-      Container(
+  Widget _renderClearButton(String uuid, Color color, [bool isClearChildrenOnly = false]) => Container(
         width: 14,
         height: 14,
         padding: const EdgeInsets.symmetric(horizontal: 0),
-        decoration: BoxDecoration(
-          color: darkColor,
-          border: Border.all(
-            color: color,
-          ),
-        ),
+        decoration: BoxDecoration(color: darkColor, border: Border.all(color: color)),
         child: CustomIconButton(
-          isClearChildrenOnly
-              ? CupertinoIcons.refresh_bold
-              : CupertinoIcons.xmark,
+          isClearChildrenOnly ? CupertinoIcons.refresh_bold : CupertinoIcons.xmark,
           size: 10,
           color: color,
           callback: () async {
@@ -446,11 +366,11 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
     _projectProvider.removeSceneContent(uuid);
   }
 
-  void _setCursor([MouseCursor nextCursor = SystemMouseCursors.basic]) =>
-      setState(() => cursor = nextCursor);
+  void _setCursor([MouseCursor nextCursor = SystemMouseCursors.basic]) => setState(() => cursor = nextCursor);
 
-  void _setSelectedContent([dynamic content]) =>
-      setState(() => selectedContent = content);
+  void _setSelectedContent([dynamic content]) => setState(() => selectedContent = content);
+
+  void _setIsDragging([bool flag = false]) => setState(() => isDragging = flag);
 
   void _setContentIsFolded(dynamic content, bool isFolded) {
     _setSelectedContent(content);
@@ -488,12 +408,7 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
       _projectProvider.addSearchedSceneCommand(item);
     }
     final isRoot = selectedContent == null;
-    _addSceneContent(
-      item,
-      isRoot ? _sceneContents : selectedContent,
-      isRoot,
-      false,
-    );
+    _addSceneContent(item, isRoot ? _sceneContents : selectedContent, isRoot, false);
   }
 
   Widget get _renderSelectedCommandItems => Expanded(
@@ -511,17 +426,10 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
                         minSize: 0,
                         padding: EdgeInsets.zero,
                         child: Container(
-                          decoration:
-                              BoxDecoration(color: color.withOpacity(0.2)),
+                          decoration: BoxDecoration(color: color.withOpacity(0.2)),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            child: Text(
-                              localized,
-                              style: primaryTextStyle.copyWith(color: color),
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            child: Text(localized, style: primaryTextStyle.copyWith(color: color)),
                           ),
                         ),
                         onPressed: () => _addSceneCommand(localized, false),
@@ -539,11 +447,9 @@ class _SceneManageComponentState extends ConsumerState<SceneManageComponent> {
 
   List<dynamic> get _sceneContents => _projectState.sceneContents ?? [];
 
-  String get _selectedUUID =>
-      selectedContent == null ? '' : selectedContent['uuid'];
+  String get _selectedUUID => selectedContent == null ? '' : selectedContent['uuid'];
 
-  List<String> get _autocompletedWords =>
-      commandItems.map((e) => e['localized'] as String).toList();
+  List<String> get _autocompletedWords => commandItems.map((e) => e['localized'] as String).toList();
 
   double get _scrollHeight => controller.position.maxScrollExtent;
 

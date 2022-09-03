@@ -1,80 +1,95 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mana_studio/components/common/custom_button.dart';
 import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/ui_config.dart';
+import 'package:mana_studio/utils/func.dart';
+import 'package:mana_studio/utils/max_lines_text_input_formatter.dart';
 
 class SceneCommandContextManager {
   SceneCommandContextManager(
     this.content,
     this.color, [
-    this.onSelected,
     this.onChanged,
   ]);
 
   final dynamic content;
   final Color color;
-  final VoidCallback? onSelected;
   final Function(dynamic next)? onChanged;
 
   Widget? get render {
-    switch (_type) {
+    switch (type) {
       case showMessageCommand:
-        return _renderShowMessage;
+      case commentCommand:
+        return _renderEditDescription;
     }
     return null;
   }
 
-  FocusNode? focusNode;
-
-  bool _hasKey(String key) => !(_data.isEmpty || !_data.containsKey(key));
-
-  Widget? get _renderShowMessage {
-    if (!_hasKey('description')) {
+  Widget? get _renderEditDescription {
+    if (!hasKey('description')) {
       return null;
     }
-    final description = ValueNotifier(_data['description'] ?? '');
-    final controller = TextEditingController(text: _data['description']);
-    // controller.selection = TextSelection.fromPosition(
-    //   TextPosition(offset: _data['description'].length),
-    // );
+    final description = ValueNotifier(data['description'] ?? '');
+    final controller = TextEditingController(text: description.value);
     final focusNode = FocusNode(
       onKey: (node, event) {
-        if (!event.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
-          _data['description'] = description.value;
-          onChanged?.call(content);
+        if ((event.isControlPressed || event.isMetaPressed) && event.logicalKey.keyLabel == 'Enter') {
           node.unfocus();
+          data['description'] = description.value;
+          onChanged?.call(content);
         }
         return KeyEventResult.ignored;
       },
     );
     return ValueListenableBuilder(
       builder: (context, value, _) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 600,
-            child: CupertinoTextField.borderless(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: BoxDecoration(color: color.withOpacity(0.1)),
-              style: primaryTextStyle.copyWith(color: color),
-              cursorColor: color,
-              maxLines: 4,
-              autofocus: true,
-              onTap: () {
-                onSelected?.call();
-              },
-              onChanged: (text) => description.value = text,
-            ),
+          CupertinoTextField.borderless(
+            inputFormatters: [MaxLinesTextInputFormatter(4)],
+            focusNode: focusNode,
+            controller: controller,
+            decoration: BoxDecoration(color: color.withOpacity(0.1)),
+            style: primaryTextStyle.copyWith(color: color),
+            cursorColor: color,
+            maxLines: 4,
+            maxLength: 500,
+            autofocus: true,
+            onChanged: (text) => description.value = text,
           ),
-        ],
+          if (value != data['description'])
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    CustomButton(
+                      '저장',
+                      color: color,
+                      icon: CupertinoIcons.archivebox_fill,
+                      onSubmitted: () {
+                        focusNode.unfocus();
+                        data['description'] = description.value;
+                        onChanged?.call(content);
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    Text('(Ctrl + Enter)', style: primaryTextStyle.copyWith(color: color)),
+                  ],
+                ),
+                Text('${description.value.length} / 500', style: primaryTextStyle.copyWith(color: color)),
+              ],
+            ),
+        ].superJoin(const SizedBox(height: 10)).toList(),
       ),
       valueListenable: description,
     );
   }
 
-  String get _uuid => content['uuid'];
+  bool hasKey(String key) => !(data.isEmpty || !data.containsKey(key));
 
-  String get _type => content['type'];
+  String get uuid => content['uuid'];
 
-  Map<String, dynamic> get _data => content['data'] ?? {};
+  String get type => content['type'];
+
+  Map<String, dynamic> get data => content['data'] ?? {};
 }

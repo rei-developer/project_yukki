@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:mana_studio/components/common/custom_button.dart';
 import 'package:mana_studio/config/ui_config.dart';
 
 class CustomAutocomplete extends StatefulWidget {
@@ -65,16 +66,13 @@ class _CustomAutocompleteState extends State<CustomAutocomplete> {
                     border: Border.all(color: primaryColor),
                   ),
                   itemBuilder: (context, text) => Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
                     decoration: BoxDecoration(
                       color: controller.text == text ? primaryColor : darkColor,
                     ),
                     child: Text(
                       '$text',
-                      style: controller.text == text
-                          ? darkTextBoldStyle
-                          : primaryTextStyle,
+                      style: controller.text == text ? darkTextBoldStyle : primaryTextStyle,
                     ),
                   ),
                   noItemsFoundBuilder: (_) => Container(),
@@ -90,33 +88,10 @@ class _CustomAutocompleteState extends State<CustomAutocomplete> {
             ),
             SizedBox(
               height: 25,
-              child: CupertinoButton(
-                minSize: 0,
-                padding: EdgeInsets.zero,
-                child: Container(
-                  width: 50,
-                  height: 18,
-                  decoration: const BoxDecoration(
-                    color: primaryColor,
-                    borderRadius: BorderRadius.all(Radius.circular(2)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          widget.searchIcon,
-                          size: 12,
-                          color: darkColor,
-                        ),
-                        Text(widget.searchLabel, style: darkTextBoldStyle),
-                      ],
-                    ),
-                  ),
-                ),
-                onPressed: () => _onSubmitted(),
+              child: CustomButton(
+                widget.searchLabel,
+                icon: widget.searchIcon,
+                onSubmitted: _onSubmitted,
               ),
             ),
           ],
