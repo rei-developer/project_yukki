@@ -7,7 +7,7 @@ class Section extends StatefulWidget {
     this.label,
     this.body, {
     this.icon,
-    this.headerButtons,
+    this.headerChildren,
     this.width,
     this.height,
     Key? key,
@@ -15,7 +15,7 @@ class Section extends StatefulWidget {
 
   final IconData? icon;
   final String label;
-  final List<Widget>? headerButtons;
+  final List<Widget>? headerChildren;
   final Widget body;
   final double? width;
   final double? height;
@@ -48,10 +48,10 @@ class _SectionState extends State<Section> {
                         child: Text(widget.label, style: darkTextBoldStyle),
                       ),
                     ),
-                    if (widget.headerButtons != null)
+                    if (widget.headerChildren != null)
                       Wrap(
                         children: [
-                          ...widget.headerButtons!,
+                          ...widget.headerChildren!,
                         ].superJoin(const SizedBox(width: 2)).toList(),
                       ),
                   ],

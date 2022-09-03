@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mana_studio/config/asset_config.dart';
 import 'package:mana_studio/config/debugger_config.dart';
 import 'package:mana_studio/config/project_config.dart';
-import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/storage_config.dart';
 import 'package:mana_studio/models/project_model.dart';
 import 'package:mana_studio/models/scene/scene_content_model.dart';
@@ -34,7 +33,8 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
   Future<void> runScene() async {
     final sceneLoader = SceneLoader();
     final localScenes = await sceneLoader.loadLocalScenes();
-    setScenes(state.scenes.copyWith(localScenes: localScenes));
+    setLocalScenes(localScenes);
+    setHistoryScenes([localScenes]);
     _gameProvider.run(setSceneName());
   }
 
@@ -82,10 +82,10 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
     if (localScenes.isEmpty) {
       return;
     }
-    setScenes(state.scenes.copyWith(localScenes: localScenes));
+    setLocalScenes(localScenes);
   }
 
-  void addSceneContent(dynamic prev, dynamic next, [bool isRoot = false]) {
+  void addSceneContent(dynamic prev, dynamic next, [bool isRoot = false, bool isRemove = false]) {
     try {
       List<dynamic> contents = [...state.sceneContents];
       if (isRoot) {
@@ -94,6 +94,11 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
         contents = _addSceneContent(contents, prev, next);
       }
       changeSceneContent(contents);
+      final uuid = prev['uuid'];
+      if (uuid == null || !isRemove) {
+        return;
+      }
+      removeSceneContent(uuid, false, false);
     } on StackOverflowError catch (e) {
       _debuggerProvider.addDebug(e.toString(), errorDebug);
     }
@@ -211,24 +216,35 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
         },
       ).toList();
 
-  void changeSceneContent(dynamic content, [bool isPlaySound = true]) {
+  void changeSceneContent(dynamic content, [bool isPlaySound = true, bool isPushHistory = true]) {
     if (_findLocalSceneIndex < 0) {
       return;
     }
     List<SceneModel> scenes = [...state.scenes.localScenes];
-    scenes[_findLocalSceneIndex] = scenes[_findLocalSceneIndex].copyWith(
-      content: json.encode(content),
-    );
+    scenes[_findLocalSceneIndex] = scenes[_findLocalSceneIndex].copyWith(content: json.encode(content));
     if (isPlaySound) {
       _audioProvider.setSE('sound12.mp3');
     }
     setLocalScenes(scenes);
+    if (isPushHistory) {
+      setHistoryScenes([...state.scenes.historyScenes, scenes]);
+    }
   }
 
-  void removeSceneContent(String uuid, [bool isClearChildrenOnly = false]) {
+  void popHistoryScenes() {
+    List<List<SceneModel>> historyScenes = state.scenes.historyScenes;
+    if (historyScenes.length <= 1) {
+      return;
+    }
+    historyScenes.removeLast();
+    setLocalScenes(historyScenes.last);
+    setHistoryScenes(historyScenes);
+  }
+
+  void removeSceneContent(String uuid, [bool isClearChildrenOnly = false, bool isPushHistory = true]) {
     List<dynamic> contents = [...state.sceneContents];
     contents = _removeSceneContent(contents, uuid, isClearChildrenOnly);
-    changeSceneContent(contents, false);
+    changeSceneContent(contents, false, isPushHistory);
   }
 
   List<dynamic> _removeSceneContent(List<dynamic> contents, String uuid, bool isClearChildrenOnly) => contents
@@ -276,6 +292,9 @@ class ProjectProvider extends StateNotifier<ProjectModel> {
   void setScenes(ScenesModel scenes) => state = state.copyWith(scenes: scenes);
 
   void setLocalScenes(List<SceneModel> localScenes) => setScenes(state.scenes.copyWith(localScenes: localScenes));
+
+  void setHistoryScenes(List<List<SceneModel>> historyScenes) =>
+      setScenes(state.scenes.copyWith(historyScenes: historyScenes));
 
   void setScripts(ScriptsModel scripts) => state = state.copyWith(scripts: scripts);
 

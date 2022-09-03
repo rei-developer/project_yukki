@@ -8,7 +8,6 @@ import 'package:mana_studio/components/common/section.dart';
 import 'package:mana_studio/components/common/section_header_button.dart';
 import 'package:mana_studio/managers/scene/scene_command_header_package_manager.dart';
 import 'package:mana_studio/managers/scene/scene_command_package_manager.dart';
-import 'package:mana_studio/config/debugger_config.dart';
 import 'package:mana_studio/config/scene_command_config.dart';
 import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/i18n/strings.g.dart';
@@ -70,12 +69,18 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
           ),
         ),
         icon: CupertinoIcons.book,
-        headerButtons: [
+        headerChildren: [
           SectionHeaderButton(
             icon: isLocked ? CupertinoIcons.lock_fill : CupertinoIcons.lock_open,
             tooltip: isLocked ? t.common.unlock : t.common.lock,
             callback: (_) => _toggleLock(),
           ),
+          if (!isLocked && _hasHistory)
+            SectionHeaderButton(
+              icon: CupertinoIcons.arrow_uturn_left,
+              tooltip: 'BACK',
+              callback: (_) => _popHistory(),
+            ),
           SectionHeaderButton(
             icon: CupertinoIcons.fullscreen,
             tooltip: t.common.unfold,
@@ -106,13 +111,14 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
             tooltip: t.common.downToLine,
             callback: (_) => _animateTo(),
           ),
-          SectionHeaderButton(
-            icon: isLocked ? CupertinoIcons.trash_slash : CupertinoIcons.trash_fill,
-            audioPath: 'se5.wav',
-            tooltip: t.common.clear,
-            isPlaySoundAfterPong: true,
-            callback: (pong) => _clearSceneContent(pong),
-          ),
+          if (!isLocked)
+            SectionHeaderButton(
+              icon: CupertinoIcons.trash_fill,
+              audioPath: 'se5.wav',
+              tooltip: t.common.clear,
+              isPlaySoundAfterPong: true,
+              callback: (pong) => _clearSceneContent(pong),
+            ),
         ],
       );
 
@@ -373,12 +379,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
     if (isLocked) {
       return;
     }
-    _projectProvider.addSceneContent(data, content, isRoot);
-    final uuid = data['uuid'];
-    if (uuid == null || !isRemove) {
-      return;
-    }
-    _projectProvider.removeSceneContent(uuid);
+    _projectProvider.addSceneContent(data, content, isRoot, isRemove);
   }
 
   void _setCursor([MouseCursor nextCursor = SystemMouseCursors.basic]) => setState(() => cursor = nextCursor);
@@ -395,15 +396,14 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
 
   void _toggleLock() => setState(() => isLocked = !isLocked);
 
+  void _popHistory() => _projectProvider.popHistoryScenes();
+
   void _toggleFoldAll([bool isAllFolded = false]) {
     _animateTo(0);
     _projectProvider.setAllSceneContent('isFolded', isAllFolded);
   }
 
   void _clearSceneContent(VoidCallback? pong) async {
-    if (_isLocked) {
-      return;
-    }
     final result = await AlertManager.show('정말로 모두 삭제할 거니?', noLabel: '아니오');
     if (result != CustomButton.positiveButton) {
       return;
@@ -468,13 +468,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
 
   double get _scrollHeight => controller.position.maxScrollExtent;
 
-  bool get _isLocked {
-    if (isLocked && _debuggerProvider.mounted) {
-      _debuggerProvider.addDebug('씬이 잠긴 상태입니다.', warningDebug);
-      return true;
-    }
-    return false;
-  }
+  bool get _hasHistory => _projectState.scenes.historyScenes.length > 1;
 
   DebuggerProvider get _debuggerProvider => ref.read(debuggerProvider.notifier);
 

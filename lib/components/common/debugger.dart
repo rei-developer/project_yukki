@@ -33,7 +33,7 @@ class _DebugConsoleState extends ConsumerState<Debugger> {
         ].superJoin(const SizedBox(height: 5)).toList(),
       ),
       icon: CupertinoIcons.captions_bubble,
-      headerButtons: [
+      headerChildren: [
         SectionHeaderButton(
           icon: isPined ? CupertinoIcons.pin_fill : CupertinoIcons.pin_slash,
           tooltip: isPined ? t.common.unpin : t.common.pin,
