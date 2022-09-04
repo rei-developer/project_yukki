@@ -30,7 +30,7 @@ class _ManageCommandComponentState extends ConsumerState<ManageCommandComponent>
 
   @override
   Widget build(BuildContext context) => Section(
-        '${t.headers.commands} - ${_getCommandsLabel()}',
+        Text('${t.headers.commands} - ${_getCommandsLabel()}', style: darkTextBoldStyle),
         ListView(
           controller: ScrollController(),
           children: renderWidgetList(

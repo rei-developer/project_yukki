@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:mana_studio/components/common/custom_button.dart';
 import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/models/scene/scene_command_package_model.dart';
-import 'package:mana_studio/utils/func.dart';
 import 'package:mana_studio/utils/max_lines_text_input_formatter.dart';
 import 'package:mana_studio/utils/render/render_widget_list.dart';
 

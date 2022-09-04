@@ -25,7 +25,7 @@ class _DebugConsoleState extends ConsumerState<Debugger> {
   Widget build(BuildContext context) {
     _listenDebugger();
     return Section(
-      t.headers.debugger,
+      Text(t.headers.debugger, style: darkTextBoldStyle),
       ListView(
         controller: controller,
         physics: const ClampingScrollPhysics(),

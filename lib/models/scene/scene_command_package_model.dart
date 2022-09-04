@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 
 class SceneCommandPackageModel {
   SceneCommandPackageModel(
+    this.context,
     this.content,
     this.color, [
     this.onChanged,
   ]);
 
+  final BuildContext context;
   final dynamic content;
   final Color color;
   final Function(dynamic next)? onChanged;

@@ -8,7 +8,14 @@ class SceneCommandHeaderPackageManager {
 
   final SceneCommandPackageModel package;
 
-  Widget? get render {
+  Widget? get render => _render == null
+      ? null
+      : Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [_render!],
+        );
+
+  Widget? get _render {
     switch (package.type) {
       case showMessageCommand:
       case commentCommand:

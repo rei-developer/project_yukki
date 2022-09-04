@@ -36,7 +36,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
 
   @override
   Widget build(BuildContext context) => Section(
-        t.headers.scene(sceneName: _sceneName),
+        Text(t.headers.scene(sceneName: _sceneName), style: darkTextBoldStyle),
         MouseRegion(
           cursor: cursor,
           child: Stack(
@@ -47,7 +47,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
                   controller: controller,
                   physics: const ClampingScrollPhysics(),
                   children: [
-                    ..._generateSceneContents(_sceneContents),
+                    ..._generateSceneContents(context, _sceneContents),
                     if (!isLocked) CustomDivider(color: darkColor.withOpacity(0.2)),
                     if (!isLocked) _renderAdditionalArea(_sceneContents, true),
                     SizedBox(height: MediaQuery.of(context).size.height / 2),
@@ -123,8 +123,8 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
         ],
       );
 
-  List<Widget> _generateSceneContents(List<dynamic> contents, [int depth = 0]) => contents
-      .map((content) => _renderSceneContent(content, depth))
+  List<Widget> _generateSceneContents(BuildContext context, List<dynamic> contents, [int depth = 0]) => contents
+      .map((content) => _renderSceneContent(context, content, depth))
       .superJoin(CustomDivider(color: (depth == 0 ? darkColor : pitchBlackColor).withOpacity(0.2)))
       .toList();
 
@@ -166,13 +166,14 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
     );
   }
 
-  Widget _renderSceneContent(dynamic content, [int depth = 0]) {
+  Widget _renderSceneContent(BuildContext context, dynamic content, [int depth = 0]) {
     final label = t['scene.command.${content['type']}.label'];
     final uuid = content['uuid'];
     final type = content['type'];
     final color = getCommandColor(type);
     final renderHeader = SceneCommandHeaderPackageManager(
       SceneCommandPackageModel(
+        context,
         content,
         color,
         (next) => _projectProvider.setSceneContent(next),
@@ -180,6 +181,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
     ).render;
     final renderBody = SceneCommandPackageManager(
       SceneCommandPackageModel(
+        context,
         content,
         color,
         (next) => _projectProvider.setSceneContent(next),
@@ -264,16 +266,17 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
                                   ),
                                   Expanded(child: renderHeader ?? Container()),
                                   _renderUUID(uuid, color),
-                                  Row(
-                                    children: renderWidgetList(
-                                      [
-                                        if (hasChildren) _renderClearButton(uuid, color, true),
-                                        _renderClearButton(uuid, color),
-                                      ],
-                                      padding: 3,
-                                      isVertical: false,
+                                  if (!isLocked)
+                                    Row(
+                                      children: renderWidgetList(
+                                        [
+                                          if (hasChildren) _renderClearButton(uuid, color, true),
+                                          _renderClearButton(uuid, color),
+                                        ],
+                                        padding: 3,
+                                        isVertical: false,
+                                      ),
                                     ),
-                                  ),
                                 ],
                                 isVertical: false,
                               ),
@@ -295,7 +298,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
                             decoration: BoxDecoration(color: darkColor, border: Border.all(color: primaryLightColor)),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: _generateSceneContents(children, depth + 1),
+                              children: _generateSceneContents(context, children, depth + 1),
                             ),
                           ),
                         ),
