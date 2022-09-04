@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/utils/func.dart';
+import 'package:mana_studio/utils/render/render_widget_list.dart';
 
 class Section extends StatefulWidget {
   const Section(
@@ -49,11 +50,7 @@ class _SectionState extends State<Section> {
                       ),
                     ),
                     if (widget.headerChildren != null)
-                      Wrap(
-                        children: [
-                          ...widget.headerChildren!,
-                        ].superJoin(const SizedBox(width: 2)).toList(),
-                      ),
+                      Wrap(children: renderWidgetList(widget.headerChildren!, padding: 2, isVertical: false)),
                   ],
                 ),
               ),

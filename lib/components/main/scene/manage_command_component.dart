@@ -8,6 +8,7 @@ import 'package:mana_studio/config/ui_config.dart';
 import 'package:mana_studio/i18n/strings.g.dart';
 import 'package:mana_studio/providers/audio_player_provider.dart';
 import 'package:mana_studio/utils/func.dart';
+import 'package:mana_studio/utils/render/render_widget_list.dart';
 import 'package:uuid/uuid.dart';
 
 class ManageCommandComponent extends ConsumerStatefulWidget {
@@ -32,11 +33,13 @@ class _ManageCommandComponentState extends ConsumerState<ManageCommandComponent>
         '${t.headers.commands} - ${_getCommandsLabel()}',
         ListView(
           controller: ScrollController(),
-          children: [
-            Wrap(children: [..._renderCommands].superJoin(const SizedBox(width: 5)).toList()),
-            const SizedBox(height: 20),
-            Column(children: [..._renderSelectedCommands].superJoin(const SizedBox(height: 10)).toList()),
-          ],
+          children: renderWidgetList(
+            [
+              Wrap(children: renderWidgetList(_renderCommands, padding: 5, isVertical: false)),
+              Column(children: renderWidgetList(_renderSelectedCommands)),
+            ],
+            padding: 20,
+          ),
         ),
         icon: CupertinoIcons.command,
       );
@@ -133,7 +136,7 @@ class _ManageCommandComponentState extends ConsumerState<ManageCommandComponent>
               style: primaryTextBoldStyle.copyWith(color: _color, fontStyle: FontStyle.italic),
             ),
             Padding(padding: const EdgeInsets.symmetric(vertical: 5), child: DottedLine(dashColor: _color)),
-            Wrap(children: [..._renderSelectedCommandItems(entry.value)].superJoin(const SizedBox(width: 5)).toList()),
+            Wrap(children: renderWidgetList(_renderSelectedCommandItems(entry.value), padding: 5, isVertical: false)),
           ],
         ),
       )

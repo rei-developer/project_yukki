@@ -18,6 +18,7 @@ import 'package:mana_studio/providers/project_provider.dart';
 import 'package:mana_studio/utils/func.dart';
 import 'package:mana_studio/managers/alert_manager.dart';
 import 'package:mana_studio/utils/masker.dart';
+import 'package:mana_studio/utils/render/render_widget_list.dart';
 
 class ManageSceneComponent extends ConsumerStatefulWidget {
   const ManageSceneComponent({Key? key}) : super(key: key);
@@ -143,18 +144,21 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
-              children: [
-                _renderDepth(depth, color),
-                Text(
-                  childrenLength > 0 ? '$typeName 및 $childrenLength개의 ${t.scene.children}...' : typeName,
-                  style: primaryTextBoldStyle.copyWith(color: color),
-                ),
-                _renderUUID(content['uuid'], color),
-                Text(
-                  '명령어 다른 곳에 배치...',
-                  style: primaryTextStyle.copyWith(color: color),
-                )
-              ].superJoin(const SizedBox(width: 10)).toList(),
+              children: renderWidgetList(
+                [
+                  _renderDepth(depth, color),
+                  Text(
+                    childrenLength > 0 ? '$typeName 및 $childrenLength개의 ${t.scene.children}...' : typeName,
+                    style: primaryTextBoldStyle.copyWith(color: color),
+                  ),
+                  _renderUUID(content['uuid'], color),
+                  Text(
+                    '명령어 다른 곳에 배치...',
+                    style: primaryTextStyle.copyWith(color: color),
+                  )
+                ],
+                isVertical: false,
+              ),
             ),
           ],
         ),
@@ -217,59 +221,68 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
                   },
                   builder: (context, _, __) => Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Draggable(
-                        data: content,
-                        onDragStarted: () {
-                          _setCursor(SystemMouseCursors.grabbing);
-                          _setSelectedContent(content);
-                          _setIsDragging(true);
-                        },
-                        onDragEnd: (_) {
-                          _setCursor();
-                          _setIsDragging();
-                        },
-                        feedback: _renderSceneContentFeedback(content, depth),
-                        childWhenDragging: Container(height: 14),
-                        child: GestureDetector(
-                          onDoubleTap: () => _setContentIsFolded(content, !isFolded),
-                          child: Row(
-                            children: <Widget>[
-                              if (!isPossibleHasChildren(type) && renderBody == null)
-                                SizedBox(width: 10, child: Icon(CupertinoIcons.circle_fill, size: 6, color: color))
-                              else
-                                MouseRegion(
-                                  cursor: cursor,
-                                  onHover: (_) => _setCursor(SystemMouseCursors.click),
-                                  onExit: (_) => _setCursor(),
-                                  child: SizedBox(
-                                    width: 10,
-                                    child: CustomIconButton(
-                                      isFolded ? CupertinoIcons.chevron_right : CupertinoIcons.chevron_down,
-                                      color: color,
-                                      callback: () => _setContentIsFolded(content, !isFolded),
+                    children: renderWidgetList(
+                      [
+                        Draggable(
+                          data: content,
+                          onDragStarted: () {
+                            _setCursor(SystemMouseCursors.grabbing);
+                            _setSelectedContent(content);
+                            _setIsDragging(true);
+                          },
+                          onDragEnd: (_) {
+                            _setCursor();
+                            _setIsDragging();
+                          },
+                          feedback: _renderSceneContentFeedback(content, depth),
+                          childWhenDragging: Container(height: 14),
+                          child: GestureDetector(
+                            onDoubleTap: () => _setContentIsFolded(content, !isFolded),
+                            child: Row(
+                              children: renderWidgetList(
+                                [
+                                  if (!isPossibleHasChildren(type) && renderBody == null)
+                                    SizedBox(width: 10, child: Icon(CupertinoIcons.circle_fill, size: 6, color: color))
+                                  else
+                                    MouseRegion(
+                                      cursor: cursor,
+                                      onHover: (_) => _setCursor(SystemMouseCursors.click),
+                                      onExit: (_) => _setCursor(),
+                                      child: SizedBox(
+                                        width: 10,
+                                        child: CustomIconButton(
+                                          isFolded ? CupertinoIcons.chevron_right : CupertinoIcons.chevron_down,
+                                          color: color,
+                                          callback: () => _setContentIsFolded(content, !isFolded),
+                                        ),
+                                      ),
+                                    ),
+                                  _renderDepth(depth, color),
+                                  SizedBox(
+                                    width: 160,
+                                    child: Text(label, style: primaryTextBoldStyle.copyWith(color: color)),
+                                  ),
+                                  Expanded(child: renderHeader ?? Container()),
+                                  _renderUUID(uuid, color),
+                                  Row(
+                                    children: renderWidgetList(
+                                      [
+                                        if (hasChildren) _renderClearButton(uuid, color, true),
+                                        _renderClearButton(uuid, color),
+                                      ],
+                                      padding: 3,
+                                      isVertical: false,
                                     ),
                                   ),
-                                ),
-                              _renderDepth(depth, color),
-                              SizedBox(
-                                width: 160,
-                                child: Text(label, style: primaryTextBoldStyle.copyWith(color: color)),
+                                ],
+                                isVertical: false,
                               ),
-                              Expanded(child: renderHeader ?? Container()),
-                              _renderUUID(uuid, color),
-                              Row(
-                                children: <Widget>[
-                                  if (hasChildren) _renderClearButton(uuid, color, true),
-                                  _renderClearButton(uuid, color),
-                                ].superJoin(const SizedBox(width: 3)).toList(),
-                              ),
-                            ].superJoin(const SizedBox(width: 10)).toList(),
+                            ),
                           ),
                         ),
-                      ),
-                      if (renderBody != null && !isFolded) renderBody,
-                    ].superJoin(const SizedBox(height: 10)).toList(),
+                        if (renderBody != null && !isFolded) renderBody,
+                      ],
+                    ),
                   ),
                 ),
                 if (!isFolded && isPossibleHasChildren(type))
@@ -331,7 +344,7 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
 
   Widget _renderLabel(String text, [Color color = primaryColor]) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        decoration: BoxDecoration(color: color, borderRadius: const BorderRadius.all(Radius.circular(2))),
+        decoration: BoxDecoration(color: color),
         child: Text(text, style: darkTextBoldStyle.copyWith(fontSize: 11)),
       );
 
@@ -431,29 +444,28 @@ class _ManageSceneComponentState extends ConsumerState<ManageSceneComponent> {
           height: 25,
           child: ListView(
             scrollDirection: Axis.horizontal,
-            children: <Widget>[
-              ..._projectState.searchedSceneCommands
-                  .map(
-                    (dynamic command) {
-                      final color = getCommandColor(command['type']);
-                      final localized = command['localized'];
-                      return CupertinoButton(
-                        minSize: 0,
-                        padding: EdgeInsets.zero,
-                        child: Container(
-                          decoration: BoxDecoration(color: color.withOpacity(0.2)),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            child: Text(localized, style: primaryTextStyle.copyWith(color: color)),
-                          ),
-                        ),
-                        onPressed: () => _addSceneCommand(localized, false),
-                      );
-                    },
-                  )
-                  .toList()
-                  .reversed,
-            ].superJoin(const SizedBox(width: 10)).toList(),
+            children: renderWidgetList(
+              _projectState.searchedSceneCommands.map(
+                (dynamic command) {
+                  final color = getCommandColor(command['type']);
+                  final localized = command['localized'];
+                  return CupertinoButton(
+                    minSize: 0,
+                    padding: EdgeInsets.zero,
+                    child: Container(
+                      decoration: BoxDecoration(color: color.withOpacity(0.2)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        child: Text(localized, style: primaryTextStyle.copyWith(color: color)),
+                      ),
+                    ),
+                    onPressed: () => _addSceneCommand(localized, false),
+                  );
+                },
+              ).toList(),
+              isVertical: false,
+              isReversed: true,
+            ),
           ),
         ),
       );

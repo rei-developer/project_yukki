@@ -8,6 +8,7 @@ import 'package:mana_studio/i18n/strings.g.dart';
 import 'package:mana_studio/models/debugger_model.dart';
 import 'package:mana_studio/providers/debugger_provider.dart';
 import 'package:mana_studio/utils/func.dart';
+import 'package:mana_studio/utils/render/render_widget_list.dart';
 
 class Debugger extends ConsumerStatefulWidget {
   const Debugger({Key? key}) : super(key: key);
@@ -28,9 +29,7 @@ class _DebugConsoleState extends ConsumerState<Debugger> {
       ListView(
         controller: controller,
         physics: const ClampingScrollPhysics(),
-        children: [
-          ..._renderDebugConsole,
-        ].superJoin(const SizedBox(height: 5)).toList(),
+        children: renderWidgetList(_renderDebugConsole, padding: 5),
       ),
       icon: CupertinoIcons.captions_bubble,
       headerChildren: [
@@ -108,11 +107,15 @@ class _DebugConsoleState extends ConsumerState<Debugger> {
       .map(
         (e) => Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _renderLabelBox(e.type, e.color),
-            _renderLabelBox(e.time, dateTimeDebugColor),
-            Expanded(child: Text(': ${e.description}', style: lightTextStyle)),
-          ].superJoin(const SizedBox(width: 5)).toList(),
+          children: renderWidgetList(
+            [
+              _renderLabelBox(e.type, e.color),
+              _renderLabelBox(e.time, dateTimeDebugColor),
+              Expanded(child: Text(': ${e.description}', style: lightTextStyle)),
+            ],
+            padding: 5,
+            isVertical: false,
+          ),
         ),
       )
       .toList();
