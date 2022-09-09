@@ -1,8 +1,8 @@
-import 'package:mana_studio/config/project_config.dart';
-import 'package:mana_studio/models/scene/scene_content_model.dart';
-import 'package:mana_studio/models/scene/scenes_model.dart';
-import 'package:mana_studio/models/script/scripts_model.dart';
-import 'package:mana_studio/utils/func.dart';
+import 'package:project_yukki/config/project_config.dart';
+import 'package:project_yukki/models/scene/scene_content_model.dart';
+import 'package:project_yukki/models/scene/scenes_model.dart';
+import 'package:project_yukki/models/script/scripts_model.dart';
+import 'package:project_yukki/utils/func.dart';
 
 class ProjectModel {
   ProjectModel(

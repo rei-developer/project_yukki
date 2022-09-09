@@ -1,7 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/apps/main_app.dart';
-import 'package:mana_studio/i18n/strings.g.dart';
+import 'package:project_yukki/apps/main_app.dart';
+import 'package:project_yukki/firebase_options.dart';
+import 'package:project_yukki/i18n/strings.g.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> main(List<String> args) async {
@@ -19,6 +21,7 @@ Future<void> main(List<String> args) async {
     await windowManager.show();
     await windowManager.focus();
   });
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     ProviderScope(
       child: TranslationProvider(

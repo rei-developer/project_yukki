@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mana_studio/config/ui_config.dart';
-import 'package:mana_studio/i18n/strings.g.dart';
+import 'package:project_yukki/config/ui_config.dart';
+import 'package:project_yukki/i18n/strings.g.dart';
 
 // ------------------------------------------------------------
 // type

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mana_studio/config/ui_config.dart';
+import 'package:project_yukki/config/ui_config.dart';
 
 class CustomTooltip extends StatelessWidget {
   const CustomTooltip(

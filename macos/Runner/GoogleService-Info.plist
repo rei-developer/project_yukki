@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1066074368580-adjvlj9i5iecbo74ke5crv7cf4p96027.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1066074368580-adjvlj9i5iecbo74ke5crv7cf4p96027</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBMdE3pWEzVMI0A96hb1pC3oHleFloVhXs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1066074368580</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>app.yukki.engine</string>
+	<key>PROJECT_ID</key>
+	<string>project-yukki</string>
+	<key>STORAGE_BUCKET</key>
+	<string>project-yukki.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1066074368580:ios:37a42192e3ead81ff76a11</string>
+</dict>
+</plist>

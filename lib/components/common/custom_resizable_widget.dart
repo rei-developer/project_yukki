@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mana_studio/config/ui_config.dart';
+import 'package:project_yukki/config/ui_config.dart';
 import 'package:resizable_widget/resizable_widget.dart';
 
 class CustomResizableWidget extends StatelessWidget {

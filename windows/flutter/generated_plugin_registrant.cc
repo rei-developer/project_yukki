@@ -6,6 +6,7 @@
 
 #include "generated_plugin_registrant.h"
 
+#include <desktop_webview_auth/desktop_webview_auth_plugin.h>
 #include <flutter_js/flutter_js_plugin.h>
 #include <flutter_platform_alert/flutter_platform_alert_plugin.h>
 #include <just_audio_windows/just_audio_windows_plugin.h>
@@ -14,6 +15,8 @@
 #include <window_manager/window_manager_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
+  DesktopWebviewAuthPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("DesktopWebviewAuthPlugin"));
   FlutterJsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FlutterJsPlugin"));
   FlutterPlatformAlertPluginRegisterWithRegistrar(

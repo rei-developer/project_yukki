@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/components/common/section.dart';
-import 'package:mana_studio/components/common/section_header_button.dart';
-import 'package:mana_studio/config/debugger_config.dart';
-import 'package:mana_studio/config/ui_config.dart';
-import 'package:mana_studio/i18n/strings.g.dart';
-import 'package:mana_studio/models/debugger_model.dart';
-import 'package:mana_studio/providers/debugger_provider.dart';
-import 'package:mana_studio/utils/func.dart';
-import 'package:mana_studio/utils/render/render_widget_list.dart';
+import 'package:project_yukki/components/common/section.dart';
+import 'package:project_yukki/components/common/section_header_button.dart';
+import 'package:project_yukki/config/debugger_config.dart';
+import 'package:project_yukki/config/ui_config.dart';
+import 'package:project_yukki/i18n/strings.g.dart';
+import 'package:project_yukki/models/debugger_model.dart';
+import 'package:project_yukki/providers/debugger_provider.dart';
+import 'package:project_yukki/utils/func.dart';
+import 'package:project_yukki/utils/render/render_widget_list.dart';
 
 class Debugger extends ConsumerStatefulWidget {
   const Debugger({Key? key}) : super(key: key);

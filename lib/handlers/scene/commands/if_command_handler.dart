@@ -1,5 +1,5 @@
-import 'package:mana_studio/config/scene_command_config.dart';
-import 'package:mana_studio/models/scene/scene_content_model.dart';
+import 'package:project_yukki/config/scene_command_config.dart';
+import 'package:project_yukki/models/scene/scene_content_model.dart';
 
 class IfCommandHandler {
   IfCommandHandler(this.data, this.type, [this.prev]);

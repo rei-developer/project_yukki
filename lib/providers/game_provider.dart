@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/config/scene_command_config.dart';
-import 'package:mana_studio/models/game_model.dart';
-import 'package:mana_studio/models/scene/scene_content_model.dart';
-import 'package:mana_studio/utils/func.dart';
-import 'package:mana_studio/handlers/scene/commands/if_command_handler.dart';
-import 'package:mana_studio/handlers/scene/commands/wait_command_handler.dart';
+import 'package:project_yukki/config/scene_command_config.dart';
+import 'package:project_yukki/models/game_model.dart';
+import 'package:project_yukki/models/scene/scene_content_model.dart';
+import 'package:project_yukki/utils/func.dart';
+import 'package:project_yukki/handlers/scene/commands/if_command_handler.dart';
+import 'package:project_yukki/handlers/scene/commands/wait_command_handler.dart';
 
 class GameProvider extends StateNotifier<GameModel> {
   GameProvider(this.ref) : super(GameModel.initial());

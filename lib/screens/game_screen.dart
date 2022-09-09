@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mana_studio/containers/game_container.dart';
+import 'package:project_yukki/containers/game_container.dart';
 
 class GameScreen extends StatelessWidget {
   const GameScreen({Key? key}) : super(key: key);

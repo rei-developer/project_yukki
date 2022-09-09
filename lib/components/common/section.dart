@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mana_studio/config/ui_config.dart';
-import 'package:mana_studio/utils/func.dart';
-import 'package:mana_studio/utils/render/render_widget_list.dart';
+import 'package:project_yukki/config/ui_config.dart';
+import 'package:project_yukki/utils/func.dart';
+import 'package:project_yukki/utils/render/render_widget_list.dart';
 
 class Section extends StatefulWidget {
   const Section(

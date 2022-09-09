@@ -1,4 +1,4 @@
-import 'package:mana_studio/models/script/script_model.dart';
+import 'package:project_yukki/models/script/script_model.dart';
 
 class ScriptsModel {
   ScriptsModel(this.coreScripts, this.defaultScripts, this.localScripts);

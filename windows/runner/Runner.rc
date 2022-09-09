@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.mananovel.studio" "\0"
-            VALUE "FileDescription", "mana_studio" "\0"
+            VALUE "CompanyName", "app.yukki.engine" "\0"
+            VALUE "FileDescription", "project_yukki" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "mana_studio" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2022 com.mananovel.studio. All rights reserved." "\0"
-            VALUE "OriginalFilename", "mana_studio.exe" "\0"
-            VALUE "ProductName", "mana_studio" "\0"
+            VALUE "InternalName", "project_yukki" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2022 Project Yukki. All rights reserved." "\0"
+            VALUE "OriginalFilename", "project_yukki.exe" "\0"
+            VALUE "ProductName", "project_yukki" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

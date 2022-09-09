@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:mana_studio/config/asset_config.dart';
+import 'package:project_yukki/config/asset_config.dart';
 
 const _assetManifest = 'AssetManifest.json';
 

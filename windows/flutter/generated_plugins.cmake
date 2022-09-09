@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  desktop_webview_auth
   flutter_js
   flutter_platform_alert
   just_audio_windows

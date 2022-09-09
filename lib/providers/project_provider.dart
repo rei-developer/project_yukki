@@ -1,23 +1,23 @@
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/config/asset_config.dart';
-import 'package:mana_studio/config/debugger_config.dart';
-import 'package:mana_studio/config/project_config.dart';
-import 'package:mana_studio/config/storage_config.dart';
-import 'package:mana_studio/models/project_model.dart';
-import 'package:mana_studio/models/scene/scene_content_model.dart';
-import 'package:mana_studio/models/scene/scene_model.dart';
-import 'package:mana_studio/models/scene/scenes_model.dart';
-import 'package:mana_studio/models/script/script_model.dart';
-import 'package:mana_studio/models/script/scripts_model.dart';
-import 'package:mana_studio/providers/audio_player_provider.dart';
-import 'package:mana_studio/providers/debugger_provider.dart';
-import 'package:mana_studio/providers/game_provider.dart';
-import 'package:mana_studio/utils/loaders/scene_loader.dart';
-import 'package:mana_studio/utils/loaders/script_loader.dart';
-import 'package:mana_studio/managers/storage_manager.dart';
-import 'package:mana_studio/utils/script_runner.dart';
+import 'package:project_yukki/config/asset_config.dart';
+import 'package:project_yukki/config/debugger_config.dart';
+import 'package:project_yukki/config/project_config.dart';
+import 'package:project_yukki/config/storage_config.dart';
+import 'package:project_yukki/models/project_model.dart';
+import 'package:project_yukki/models/scene/scene_content_model.dart';
+import 'package:project_yukki/models/scene/scene_model.dart';
+import 'package:project_yukki/models/scene/scenes_model.dart';
+import 'package:project_yukki/models/script/script_model.dart';
+import 'package:project_yukki/models/script/scripts_model.dart';
+import 'package:project_yukki/providers/audio_player_provider.dart';
+import 'package:project_yukki/providers/debugger_provider.dart';
+import 'package:project_yukki/providers/game_provider.dart';
+import 'package:project_yukki/utils/loaders/scene_loader.dart';
+import 'package:project_yukki/utils/loaders/script_loader.dart';
+import 'package:project_yukki/managers/storage_manager.dart';
+import 'package:project_yukki/utils/script_runner.dart';
 import 'package:uuid/uuid.dart';
 
 class ProjectProvider extends StateNotifier<ProjectModel> {

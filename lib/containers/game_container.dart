@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/models/game_model.dart';
-import 'package:mana_studio/models/project_model.dart';
-import 'package:mana_studio/providers/game_provider.dart';
-import 'package:mana_studio/providers/project_provider.dart';
+import 'package:project_yukki/models/game_model.dart';
+import 'package:project_yukki/models/project_model.dart';
+import 'package:project_yukki/providers/game_provider.dart';
+import 'package:project_yukki/providers/project_provider.dart';
 
 class GameContainer extends ConsumerStatefulWidget {
   const GameContainer({Key? key}) : super(key: key);

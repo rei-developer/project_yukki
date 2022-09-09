@@ -1,10 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
-import 'package:mana_studio/config/ui_config.dart';
-import 'package:mana_studio/containers/main_container.dart';
-import 'package:mana_studio/i18n/strings.g.dart';
-import 'package:mana_studio/utils/func.dart';
+import 'package:project_yukki/config/ui_config.dart';
+import 'package:project_yukki/containers/main_container.dart';
+import 'package:project_yukki/i18n/strings.g.dart';
+import 'package:project_yukki/services/auth_service.dart';
+import 'package:project_yukki/utils/func.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class MainScreen extends StatelessWidget {
                   size: 16,
                   color: CupertinoColors.inactiveGray,
                 ),
-                onPressed: () => print('test'),
+                onPressed: () async => AuthService('').signIn(),
               ),
               const SizedBox(width: 10),
               CupertinoButton(

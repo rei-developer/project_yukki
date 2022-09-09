@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mana_studio/utils/func.dart';
+import 'package:project_yukki/utils/func.dart';
 
 List<Widget> renderWidgetList(
   List<Widget> children, {

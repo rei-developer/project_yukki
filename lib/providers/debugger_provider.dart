@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/config/debugger_config.dart';
-import 'package:mana_studio/models/debugger_model.dart';
-import 'package:mana_studio/providers/audio_player_provider.dart';
+import 'package:project_yukki/config/debugger_config.dart';
+import 'package:project_yukki/models/debugger_model.dart';
+import 'package:project_yukki/providers/audio_player_provider.dart';
 
 class DebuggerProvider extends StateNotifier<List<DebuggerModel>> {
   DebuggerProvider(this.ref) : super([]);

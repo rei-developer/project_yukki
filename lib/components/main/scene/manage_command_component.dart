@@ -1,14 +1,14 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/components/common/section.dart';
-import 'package:mana_studio/components/common/custom_tooltip.dart';
-import 'package:mana_studio/config/scene_command_config.dart';
-import 'package:mana_studio/config/ui_config.dart';
-import 'package:mana_studio/i18n/strings.g.dart';
-import 'package:mana_studio/providers/audio_player_provider.dart';
-import 'package:mana_studio/utils/func.dart';
-import 'package:mana_studio/utils/render/render_widget_list.dart';
+import 'package:project_yukki/components/common/section.dart';
+import 'package:project_yukki/components/common/custom_tooltip.dart';
+import 'package:project_yukki/config/scene_command_config.dart';
+import 'package:project_yukki/config/ui_config.dart';
+import 'package:project_yukki/i18n/strings.g.dart';
+import 'package:project_yukki/providers/audio_player_provider.dart';
+import 'package:project_yukki/utils/func.dart';
+import 'package:project_yukki/utils/render/render_widget_list.dart';
 import 'package:uuid/uuid.dart';
 
 class ManageCommandComponent extends ConsumerStatefulWidget {

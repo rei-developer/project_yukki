@@ -1,4 +1,4 @@
-import 'package:mana_studio/models/scene/scene_content_model.dart';
+import 'package:project_yukki/models/scene/scene_content_model.dart';
 
 class GameModel {
   GameModel(

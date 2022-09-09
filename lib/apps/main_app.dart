@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/config/ui_config.dart';
-import 'package:mana_studio/i18n/strings.g.dart';
-import 'package:mana_studio/providers/project_provider.dart';
-import 'package:mana_studio/router.dart';
-import 'package:mana_studio/handlers/main_handler.dart';
+import 'package:project_yukki/config/ui_config.dart';
+import 'package:project_yukki/i18n/strings.g.dart';
+import 'package:project_yukki/providers/project_provider.dart';
+import 'package:project_yukki/router.dart';
+import 'package:project_yukki/handlers/main_handler.dart';
 
 class MainApp extends ConsumerStatefulWidget {
   const MainApp({Key? key}) : super(key: key);

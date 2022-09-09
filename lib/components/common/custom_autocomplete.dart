@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:mana_studio/components/common/custom_button.dart';
-import 'package:mana_studio/config/ui_config.dart';
+import 'package:project_yukki/components/common/custom_button.dart';
+import 'package:project_yukki/config/ui_config.dart';
 
 class CustomAutocomplete extends StatefulWidget {
   const CustomAutocomplete(

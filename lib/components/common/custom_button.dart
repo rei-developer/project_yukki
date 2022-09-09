@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mana_studio/config/ui_config.dart';
+import 'package:project_yukki/config/ui_config.dart';
 
 class CustomButton extends StatelessWidget {
   const CustomButton(

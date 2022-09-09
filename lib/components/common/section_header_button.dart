@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/components/common/custom_tooltip.dart';
-import 'package:mana_studio/config/ui_config.dart';
-import 'package:mana_studio/providers/audio_player_provider.dart';
+import 'package:project_yukki/components/common/custom_tooltip.dart';
+import 'package:project_yukki/config/ui_config.dart';
+import 'package:project_yukki/providers/audio_player_provider.dart';
 
 class SectionHeaderButton extends ConsumerStatefulWidget {
   const SectionHeaderButton({

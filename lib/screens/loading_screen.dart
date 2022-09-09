@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mana_studio/containers/main_container.dart';
+import 'package:project_yukki/containers/main_container.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key}) : super(key: key);

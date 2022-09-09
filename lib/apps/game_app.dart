@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/providers/project_provider.dart';
-import 'package:mana_studio/screens/game_screen.dart';
+import 'package:project_yukki/providers/project_provider.dart';
+import 'package:project_yukki/screens/game_screen.dart';
 
 class GameApp extends ConsumerStatefulWidget {
   const GameApp({

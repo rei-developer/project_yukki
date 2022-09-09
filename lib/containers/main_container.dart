@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mana_studio/components/common/custom_resizable_widget.dart';
-import 'package:mana_studio/components/common/debugger.dart';
-import 'package:mana_studio/components/main/scene/manage_command_component.dart';
-import 'package:mana_studio/components/main/scene/manage_scene_component.dart';
-import 'package:mana_studio/models/game_model.dart';
-import 'package:mana_studio/models/project_model.dart';
-import 'package:mana_studio/providers/audio_player_provider.dart';
-import 'package:mana_studio/providers/game_provider.dart';
-import 'package:mana_studio/providers/project_provider.dart';
+import 'package:project_yukki/components/common/custom_resizable_widget.dart';
+import 'package:project_yukki/components/common/debugger.dart';
+import 'package:project_yukki/components/main/scene/manage_command_component.dart';
+import 'package:project_yukki/components/main/scene/manage_scene_component.dart';
+import 'package:project_yukki/models/game_model.dart';
+import 'package:project_yukki/models/project_model.dart';
+import 'package:project_yukki/providers/audio_player_provider.dart';
+import 'package:project_yukki/providers/game_provider.dart';
+import 'package:project_yukki/providers/project_provider.dart';
 
 class MainContainer extends ConsumerStatefulWidget {
   const MainContainer({Key? key}) : super(key: key);

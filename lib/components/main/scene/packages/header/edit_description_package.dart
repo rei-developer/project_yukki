@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mana_studio/models/scene/scene_command_package_model.dart';
-import 'package:mana_studio/utils/render/render_modal_popup.dart';
+import 'package:project_yukki/models/scene/scene_command_package_model.dart';
+import 'package:project_yukki/utils/render/render_modal_popup.dart';
 
 class EditDescriptionPackage {
   EditDescriptionPackage(this.package);
