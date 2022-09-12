@@ -1,15 +1,21 @@
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project_yukki/config/auth_config.dart';
 import 'package:project_yukki/config/ui_config.dart';
 import 'package:project_yukki/containers/main_container.dart';
 import 'package:project_yukki/i18n/strings.g.dart';
-import 'package:project_yukki/services/auth_service.dart';
-import 'package:project_yukki/utils/func.dart';
+import 'package:project_yukki/providers/auth_provider.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
+  @override
+  ConsumerState<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends ConsumerState<MainScreen> {
   final currentIndex = 0;
 
   @override
@@ -31,7 +37,7 @@ class MainScreen extends StatelessWidget {
                   size: 16,
                   color: CupertinoColors.inactiveGray,
                 ),
-                onPressed: () async => AuthService('').signIn(),
+                onPressed: () => _authProvider.signIn(googleAuth),
               ),
               const SizedBox(width: 10),
               CupertinoButton(
@@ -74,4 +80,6 @@ class MainScreen extends StatelessWidget {
   List<Widget> get _widgets => [
         const MainContainer(),
       ];
+
+  AuthProvider get _authProvider => ref.read(authProvider.notifier);
 }
