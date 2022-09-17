@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project_yukki/config/auth_config.dart';
 import 'package:project_yukki/models/auth_model.dart';
+import 'package:project_yukki/repository/auth_repository.dart';
 
 class AuthProvider extends StateNotifier<AuthModel> {
   AuthProvider(this.ref) : super(AuthModel.initial());
@@ -37,8 +38,11 @@ class AuthProvider extends StateNotifier<AuthModel> {
       return null;
     }
     setIdToken(idToken);
-    print(idToken);
+    final r = await _authRepository(idToken).verify();
+    print(r);
   }
+
+  AuthRepository _authRepository([String? token]) => AuthRepository(state.authType, token ?? state.idToken);
 }
 
 final authProvider = StateNotifierProvider<AuthProvider, AuthModel>((ref) => AuthProvider(ref));

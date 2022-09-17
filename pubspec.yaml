@@ -43,6 +43,7 @@ dependencies:
   url_launcher: ^6.1.5
   just_audio: ^0.9.28
   just_audio_windows: ^0.1.0
+  dio: ^4.0.6
   uuid: ^3.0.6
   intl: ^0.17.0
   slang: ^2.6.1

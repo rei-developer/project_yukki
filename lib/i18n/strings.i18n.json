@@ -62,5 +62,17 @@
         "tooltip": "Write comments. Those comments are not visible in the scene."
       }
     }
+  },
+  "api": {
+    "errorMessage": {
+      "TOKEN_NOT_FOUND": "Token not found. Please sign-in again.",
+      "NOT_AUTHORIZED": "Not authorized.",
+      "INVALID_PARAMETER": "Invalid parameter.",
+      "INVALID_VERIFY": "Invalid verify.",
+      "ALREADY_EXIST": "It already exists.",
+      "DOES_NOT_EXIST": "it doesn't exist.",
+      "tooManyRequest": "Too many requests, please try again later.",
+      "serverError": "An error occurred on the server.\nPlease try again later."
+    }
   }
 }

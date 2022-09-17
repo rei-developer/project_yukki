@@ -62,5 +62,17 @@
         "tooltip": "주석을 작성합니다. 해당 주석은 게임에서 볼 수 없습니다."
       }
     }
+  },
+  "api": {
+    "errorMessage": {
+      "TOKEN_NOT_FOUND": "토큰을 찾을 수 없습니다. 다시 로그인해 주세요.",
+      "NOT_AUTHORIZED": "권한이 없습니다.",
+      "INVALID_PARAMETER": "잘못된 파라미터입니다.",
+      "INVALID_VERIFY": "잘못된 인증입니다.",
+      "ALREADY_EXIST": "이미 존재합니다.",
+      "DOES_NOT_EXIST": "존재하지 않습니다.",
+      "tooManyRequest": "요청이 너무 많습니다. 나중에 다시 시도해 주세요.",
+      "serverError": "서버에서 오류가 발생했습니다.\n나중에 다시 시도해 주세요."
+    }
   }
 }
